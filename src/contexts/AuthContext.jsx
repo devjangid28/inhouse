@@ -65,28 +65,24 @@ export const AuthProvider = ({ children }) => {
       const response = await fetch('http://localhost:5000/api/users/register', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          email,
-          password,
-          full_name: fullName
-        })
+        body: JSON.stringify({ email, password, full_name: fullName })
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      const payload = contentType.includes('application/json') ? await response.json() : { error: await response.text() };
 
       if (!response.ok) {
-        throw new Error(result.error || 'Registration failed');
+        throw new Error(payload?.error || `Registration failed (${response.status})`);
       }
 
       const userData = {
         user: {
-          id: result.data.id,
-          email: result.data.email,
-          user_metadata: {
-            full_name: result.data.full_name
-          }
+          id: payload.data.id,
+          email: payload.data.email,
+          user_metadata: { full_name: payload.data.full_name }
         }
       };
 
@@ -106,27 +102,24 @@ export const AuthProvider = ({ children }) => {
       const response = await fetch('http://localhost:5000/api/users/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          email,
-          password
-        })
+        body: JSON.stringify({ email, password })
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      const payload = contentType.includes('application/json') ? await response.json() : { error: await response.text() };
 
       if (!response.ok) {
-        throw new Error(result.error || 'Login failed');
+        throw new Error(payload?.error || `Login failed (${response.status})`);
       }
 
       const userData = {
         user: {
-          id: result.data.id,
-          email: result.data.email,
-          user_metadata: {
-            full_name: result.data.full_name
-          }
+          id: payload.data.id,
+          email: payload.data.email,
+          user_metadata: { full_name: payload.data.full_name }
         }
       };
 
