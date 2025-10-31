@@ -193,6 +193,16 @@ const Login = () => {
               )}
             </div>
 
+            <div className="flex items-center justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-primary hover:text-secondary font-medium transition-colors inline-flex items-center gap-1 group"
+              >
+                Forgot password?
+                <Icon name="ArrowRight" size={14} className="group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+
             <div className="pt-2">
               <Button
                 type="submit"

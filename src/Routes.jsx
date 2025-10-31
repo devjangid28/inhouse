@@ -7,6 +7,8 @@ import NotFound from "pages/NotFound";
 import { AuthProvider } from "contexts/AuthContext";
 import Login from "pages/login";
 import Signup from "pages/signup";
+import ForgotPassword from "pages/forgot-password";
+import ResetPassword from "pages/reset-password";
 import EventPlanDetails from "pages/event-plan-details";
 import BudgetCalculator from "pages/budget-calculator";
 import TaskBoardManagement from "pages/task-board-management";
@@ -22,6 +24,8 @@ const Routes = () => {
           <RouterRoutes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route
               path="/event-planning-dashboard"

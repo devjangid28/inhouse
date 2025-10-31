@@ -20,17 +20,10 @@ const migrateDatabase = () => {
     console.log('Running migrations...\n');
 
     db.serialize(() => {
-      db.get("PRAGMA table_info(events)", [], (err, row) => {
-        if (err) {
-          console.error('Error checking table schema:', err.message);
-          reject(err);
-          return;
-        }
-      });
-
+      // Check and add ai_generated_content column to events table
       db.all("PRAGMA table_info(events)", [], (err, columns) => {
         if (err) {
-          console.error('Error checking columns:', err.message);
+          console.error('Error checking events columns:', err.message);
           reject(err);
           return;
         }
@@ -44,26 +37,70 @@ const migrateDatabase = () => {
             (err) => {
               if (err) {
                 console.error('✗ Error adding column:', err.message);
-                reject(err);
               } else {
                 console.log('✓ Column ai_generated_content added successfully');
-                console.log('\n========================================');
-                console.log('✓ Migration complete!');
-                console.log('========================================\n');
-
-                db.close((err) => {
-                  if (err) {
-                    console.error('Error closing database:', err.message);
-                    reject(err);
-                  } else {
-                    resolve();
-                  }
-                });
               }
             }
           );
         } else {
           console.log('✓ Column ai_generated_content already exists');
+        }
+      });
+
+      // Check and add password reset columns to users table
+      db.all("PRAGMA table_info(users)", [], (err, columns) => {
+        if (err) {
+          console.error('Error checking users columns:', err.message);
+          reject(err);
+          return;
+        }
+
+        const hasResetToken = columns.some(col => col.name === 'reset_token');
+        const hasResetTokenExpiry = columns.some(col => col.name === 'reset_token_expiry');
+
+        if (!hasResetToken) {
+          console.log('Adding reset_token column to users table...');
+          db.run(
+            `ALTER TABLE users ADD COLUMN reset_token TEXT`,
+            (err) => {
+              if (err) {
+                console.error('✗ Error adding reset_token column:', err.message);
+              } else {
+                console.log('✓ Column reset_token added successfully');
+              }
+            }
+          );
+        } else {
+          console.log('✓ Column reset_token already exists');
+        }
+
+        if (!hasResetTokenExpiry) {
+          console.log('Adding reset_token_expiry column to users table...');
+          db.run(
+            `ALTER TABLE users ADD COLUMN reset_token_expiry DATETIME`,
+            (err) => {
+              if (err) {
+                console.error('✗ Error adding reset_token_expiry column:', err.message);
+              } else {
+                console.log('✓ Column reset_token_expiry added successfully');
+              }
+
+              console.log('\n========================================');
+              console.log('✓ Migration complete!');
+              console.log('========================================\n');
+
+              db.close((err) => {
+                if (err) {
+                  console.error('Error closing database:', err.message);
+                  reject(err);
+                } else {
+                  resolve();
+                }
+              });
+            }
+          );
+        } else {
+          console.log('✓ Column reset_token_expiry already exists');
           console.log('\n========================================');
           console.log('✓ Migration complete! No changes needed.');
           console.log('========================================\n');
