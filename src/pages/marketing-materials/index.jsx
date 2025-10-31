@@ -10,6 +10,7 @@ import VisualAssetsTab from './components/VisualAssetsTab';
 
 const MarketingMaterials = () => {
   const [activeTab, setActiveTab] = useState('email');
+  const [sharedDescription, setSharedDescription] = useState('');
   const { 
     notifications, 
     showSuccess, 
@@ -70,16 +71,26 @@ const MarketingMaterials = () => {
     }
   };
 
-  const renderActiveTab = () => {
-    switch (activeTab) {
+  const renderActiveTab = (tabId = activeTab) => {
+    switch (tabId) {
       case 'email':
-        return <EmailInvitationTab />;
+        return (
+          <EmailInvitationTab
+            sharedDescription={sharedDescription}
+            onDescriptionChange={setSharedDescription}
+          />
+        );
       case 'social':
-        return <SocialMediaTab />;
+        return <SocialMediaTab sharedDescription={sharedDescription} />;
       case 'visual':
-        return <VisualAssetsTab />;
+        return <VisualAssetsTab sharedDescription={sharedDescription} />;
       default:
-        return <EmailInvitationTab />;
+        return (
+          <EmailInvitationTab
+            sharedDescription={sharedDescription}
+            onDescriptionChange={setSharedDescription}
+          />
+        );
     }
   };
 
@@ -122,7 +133,7 @@ const MarketingMaterials = () => {
                   </button>
                   {activeTab === tabId && (
                     <div className="p-4 bg-muted/50">
-                      {renderActiveTab()}
+                      {renderActiveTab(tabId)}
                     </div>
                   )}
                 </div>

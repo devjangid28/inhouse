@@ -8,10 +8,10 @@ import { validateEmail } from '../../../utils/validation';
 import { geminiService } from '../../../services/geminiService';
 import { supabase } from '../../../lib/supabaseClient';
 
-const EmailInvitationTab = () => {
+const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => {
   const [selectedTone, setSelectedTone] = useState('formal');
   const [selectedTemplate, setSelectedTemplate] = useState('corporate');
-  const [eventDescription, setEventDescription] = useState('');
+  const eventDescription = sharedDescription ?? '';
   const [recipientEmail, setRecipientEmail] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -37,7 +37,7 @@ const EmailInvitationTab = () => {
   ];
 
   const handleGenerate = async () => {
-    if (!eventDescription.trim()) {
+    if (!eventDescription?.trim()) {
       alert('Please enter an event description');
       return;
     }
@@ -160,7 +160,9 @@ const EmailInvitationTab = () => {
             </label>
             <textarea
               value={eventDescription}
-              onChange={(e) => setEventDescription(e.target.value)}
+              onChange={(e) => {
+                onDescriptionChange?.(e.target.value);
+              }}
               placeholder="Describe your event in detail... Include event name, date, venue, key highlights, and any special instructions. You can write in English or Hindi."
               rows={6}
               className="w-full px-4 py-3 border rounded-md bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[150px] border-border"

@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Select from '../../../components/ui/Select';
 import { geminiService } from '../../../services/geminiService';
 import { supabase } from '../../../lib/supabaseClient';
 
-const SocialMediaTab = () => {
+const SocialMediaTab = ({ sharedDescription = '' }) => {
   const [selectedPlatform, setSelectedPlatform] = useState('instagram');
-  const [eventDescription, setEventDescription] = useState('');
+  const [eventDescription, setEventDescription] = useState(sharedDescription ?? '');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCaptions, setGeneratedCaptions] = useState({});
+
+  const syncedDescription = sharedDescription ?? '';
 
   const platformOptions = [
     { value: 'facebook', label: 'Facebook' },
@@ -81,7 +83,7 @@ const SocialMediaTab = () => {
 
     try {
       const captionData = await geminiService.generateSocialMediaCaption(
-        eventDescription,
+        syncedDescription,
         'Event',
         selectedPlatform
       );
@@ -91,7 +93,7 @@ const SocialMediaTab = () => {
         .insert({
           content_type: 'social_media_caption',
           platform: selectedPlatform,
-          prompt: eventDescription,
+          prompt: syncedDescription,
           generated_content: captionData,
           metadata: { platform: selectedPlatform }
         });
@@ -118,6 +120,10 @@ const SocialMediaTab = () => {
 
   const currentCaption = generatedCaptions?.[selectedPlatform];
   const characterLimit = getCharacterLimit(selectedPlatform);
+
+  useEffect(() => {
+    setEventDescription(syncedDescription);
+  }, [syncedDescription]);
 
   return (
     <div className="space-y-6">

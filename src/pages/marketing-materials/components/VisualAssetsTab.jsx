@@ -8,14 +8,20 @@ import { geminiService } from '../../../services/geminiService';
 import { supabase } from '../../../lib/supabaseClient';
 import { imageService } from '../../../services/imageService';
 
-const VisualAssetsTab = () => {
+const VisualAssetsTab = ({ sharedDescription = '' }) => {
   const [selectedAssetType, setSelectedAssetType] = useState('poster');
   const [selectedStyle, setSelectedStyle] = useState('modern');
-  const [customText, setCustomText] = useState('Annual Tech Conference 2025');
+  const [customText, setCustomText] = useState(sharedDescription || 'Annual Tech Conference 2025');
   const [selectedColor, setSelectedColor] = useState('blue');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedAssets, setGeneratedAssets] = useState([]);
   const [eventType, setEventType] = useState('');
+
+  React.useEffect(() => {
+    if (sharedDescription) {
+      setCustomText(sharedDescription);
+    }
+  }, [sharedDescription]);
 
   React.useEffect(() => {
     const savedPrefs = localStorage.getItem('event_preferences');

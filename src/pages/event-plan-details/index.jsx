@@ -68,7 +68,7 @@ const EventPlanDetails = () => {
         const eventType = preferences?.event_type || eventDataToUse?.event_type;
         const eventDate = preferences?.event_date || eventDataToUse?.date;
         const eventTime = preferences?.event_time || eventDataToUse?.time;
-        const numberOfPeople = preferences?.number_of_people || eventDataToUse?.audience_size;
+        const numberOfPeople = preferences?.number_of_people || preferences?.numberOfPeople || eventDataToUse?.audience_size;
         const budgetAmount = preferences?.budget || 75000;
 
         const mockEventData = {
@@ -81,24 +81,30 @@ const EventPlanDetails = () => {
           budget: budgetAmount,
           status: 'planning',
           description: eventDataToUse?.description || `Event planning for ${eventType || 'special occasion'}`,
+          attendeeSummary: {
+            seatingTables: Math.ceil((numberOfPeople || 0) / 8),
+            seatsPerTable: numberOfPeople > 200 ? 12 : numberOfPeople > 80 ? 10 : 8,
+            cateringPlates: Math.ceil((numberOfPeople || 0) * 1.1),
+            staffingCount: Math.max(6, Math.ceil((numberOfPeople || 0) / 25))
+          },
           contacts: [
             {
-              name: 'Sarah Johnson',
+              name: 'Riya Sharma',
               role: 'Event Manager',
-              phone: '+1 (555) 123-4567',
-              email: 'sarah.johnson@techconf.com'
+              phone: '+91 98765 43210',
+              email: 'riya.sharma@eventindia.com'
             },
             {
-              name: 'Michael Chen',
+              name: 'Arjun Mehta',
               role: 'Technical Coordinator',
-              phone: '+1 (555) 234-5678',
-              email: 'michael.chen@techconf.com'
+              phone: '+91 91234 56789',
+              email: 'arjun.mehta@eventindia.com'
             },
             {
-              name: 'Emily Rodriguez',
+              name: 'Priya Nair',
               role: 'Marketing Lead',
-              phone: '+1 (555) 345-6789',
-              email: 'emily.rodriguez@techconf.com'
+              phone: '+91 99876 54321',
+              email: 'priya.nair@eventindia.com'
             }
           ]
         };
@@ -292,7 +298,32 @@ const EventPlanDetails = () => {
           attendees: 50,
           budget: 10000,
           status: 'planning',
-          contacts: []
+          attendeeSummary: {
+            seatingTables: Math.ceil(50 / 8),
+            seatsPerTable: 8,
+            cateringPlates: Math.ceil(50 * 1.1),
+            staffingCount: Math.max(6, Math.ceil(50 / 25))
+          },
+          contacts: [
+            {
+              name: 'Riya Sharma',
+              role: 'Event Manager',
+              phone: '+91 98765 43210',
+              email: 'riya.sharma@eventindia.com'
+            },
+            {
+              name: 'Arjun Mehta',
+              role: 'Technical Coordinator',
+              phone: '+91 91234 56789',
+              email: 'arjun.mehta@eventindia.com'
+            },
+            {
+              name: 'Priya Nair',
+              role: 'Marketing Lead',
+              phone: '+91 99876 54321',
+              email: 'priya.nair@eventindia.com'
+            }
+          ]
         });
         setTimelineData([]);
         setProgressData({
@@ -548,6 +579,7 @@ const EventPlanDetails = () => {
                 onExport={handleExport}
                 onRegenerate={handleRegenerate}
                 onCreateTasks={handleCreateTasks}
+                attendeeSummary={eventData?.attendeeSummary}
               />
             </div>
 
@@ -557,6 +589,7 @@ const EventPlanDetails = () => {
                 <EventTimeline
                   timelineData={timelineData}
                   eventStartTime={eventData?.time}
+                  attendeeSummary={eventData?.attendeeSummary}
                   onUpdateActivity={handleUpdateActivity}
                   onAddActivity={handleAddActivity}
                 />
