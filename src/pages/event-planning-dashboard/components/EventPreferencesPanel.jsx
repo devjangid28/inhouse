@@ -36,25 +36,27 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
   ];
 
   const cityOptions = [
-    { value: 'new-york', label: 'New York, NY' },
-    { value: 'los-angeles', label: 'Los Angeles, CA' },
-    { value: 'chicago', label: 'Chicago, IL' },
-    { value: 'houston', label: 'Houston, TX' },
-    { value: 'phoenix', label: 'Phoenix, AZ' },
-    { value: 'philadelphia', label: 'Philadelphia, PA' },
-    { value: 'san-antonio', label: 'San Antonio, TX' },
-    { value: 'san-diego', label: 'San Diego, CA' },
-    { value: 'dallas', label: 'Dallas, TX' },
-    { value: 'austin', label: 'Austin, TX' },
+    { value: 'mumbai', label: 'Mumbai, Maharashtra' },
+    { value: 'delhi', label: 'Delhi, NCR' },
+    { value: 'bangalore', label: 'Bangalore, Karnataka' },
+    { value: 'hyderabad', label: 'Hyderabad, Telangana' },
+    { value: 'ahmedabad', label: 'Ahmedabad, Gujarat' },
+    { value: 'chennai', label: 'Chennai, Tamil Nadu' },
+    { value: 'kolkata', label: 'Kolkata, West Bengal' },
+    { value: 'pune', label: 'Pune, Maharashtra' },
+    { value: 'jaipur', label: 'Jaipur, Rajasthan' },
+    { value: 'lucknow', label: 'Lucknow, Uttar Pradesh' },
   ];
 
   const venueOptions = [
-    { value: 'taj-palace-lawns', label: 'Taj Palace Lawns - Luxury Garden with Gazebo' },
-    { value: 'leela-ambience', label: 'The Leela Ambience - Grand Ballroom' },
-    { value: 'itc-maurya', label: 'ITC Maurya - Conference & Banquet Hall' },
-    { value: 'oberoi-sky-terrace', label: 'The Oberoi Sky Terrace - Premium Rooftop' },
-    { value: 'trident-poolside', label: 'Trident Poolside Lawns - Lakeside View' },
-    { value: 'lalit-ashok', label: 'The Lalit Ashok - Convention Center' },
+    { value: 'taj-palace-delhi', label: 'Taj Palace Delhi - Luxury Garden with Gazebo' },
+    { value: 'leela-mumbai', label: 'The Leela Mumbai - Grand Ballroom' },
+    { value: 'itc-maurya-delhi', label: 'ITC Maurya Delhi - Conference & Banquet Hall' },
+    { value: 'oberoi-bangalore', label: 'The Oberoi Bangalore - Premium Rooftop' },
+    { value: 'trident-hyderabad', label: 'Trident Hyderabad - Poolside Lawns' },
+    { value: 'lalit-ashok-bangalore', label: 'The Lalit Ashok Bangalore - Convention Center' },
+    { value: 'jw-marriott-pune', label: 'JW Marriott Pune - Grand Ballroom' },
+    { value: 'radisson-blu-chennai', label: 'Radisson Blu Chennai - Banquet Hall' },
   ];
 
   useEffect(() => {

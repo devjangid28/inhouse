@@ -13,16 +13,16 @@ const BudgetInputForm = ({
 }) => {
 
   const cityOptions = [
-    { value: 'new-york', label: 'New York, NY', description: 'High cost metropolitan area' },
-    { value: 'los-angeles', label: 'Los Angeles, CA', description: 'Premium West Coast pricing' },
-    { value: 'chicago', label: 'Chicago, IL', description: 'Moderate Midwest pricing' },
-    { value: 'houston', label: 'Houston, TX', description: 'Competitive Southern rates' },
-    { value: 'phoenix', label: 'Phoenix, AZ', description: 'Affordable Southwest pricing' },
-    { value: 'philadelphia', label: 'Philadelphia, PA', description: 'Mid-Atlantic standard rates' },
-    { value: 'san-antonio', label: 'San Antonio, TX', description: 'Budget-friendly options' },
-    { value: 'san-diego', label: 'San Diego, CA', description: 'Premium coastal pricing' },
-    { value: 'dallas', label: 'Dallas, TX', description: 'Competitive metropolitan rates' },
-    { value: 'austin', label: 'Austin, TX', description: 'Growing market pricing' }
+    { value: 'mumbai', label: 'Mumbai, Maharashtra', description: 'High cost metropolitan area' },
+    { value: 'delhi', label: 'Delhi, NCR', description: 'Premium capital city pricing' },
+    { value: 'bangalore', label: 'Bangalore, Karnataka', description: 'Tech hub premium pricing' },
+    { value: 'hyderabad', label: 'Hyderabad, Telangana', description: 'Moderate metropolitan pricing' },
+    { value: 'ahmedabad', label: 'Ahmedabad, Gujarat', description: 'Competitive Western India rates' },
+    { value: 'chennai', label: 'Chennai, Tamil Nadu', description: 'Moderate Southern pricing' },
+    { value: 'kolkata', label: 'Kolkata, West Bengal', description: 'Affordable Eastern India rates' },
+    { value: 'pune', label: 'Pune, Maharashtra', description: 'Growing market pricing' },
+    { value: 'jaipur', label: 'Jaipur, Rajasthan', description: 'Heritage city competitive rates' },
+    { value: 'lucknow', label: 'Lucknow, Uttar Pradesh', description: 'Budget-friendly options' }
   ];
 
   const eventTypeOptions = [

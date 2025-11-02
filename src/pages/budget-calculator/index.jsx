@@ -66,12 +66,14 @@ const BudgetCalculator = () => {
 
   const mapVenueToType = (venue) => {
     const venueMapping = {
-      'taj-palace-lawns': 'outdoor-venue',
-      'leela-ambience': 'hotel-ballroom',
-      'itc-maurya': 'conference-center',
-      'oberoi-sky-terrace': 'rooftop-venue',
-      'trident-poolside': 'outdoor-venue',
-      'lalit-ashok': 'conference-center'
+      'taj-palace-delhi': 'outdoor-venue',
+      'leela-mumbai': 'hotel-ballroom',
+      'itc-maurya-delhi': 'conference-center',
+      'oberoi-bangalore': 'rooftop-venue',
+      'trident-hyderabad': 'outdoor-venue',
+      'lalit-ashok-bangalore': 'conference-center',
+      'jw-marriott-pune': 'hotel-ballroom',
+      'radisson-blu-chennai': 'banquet-hall'
     };
     return venueMapping[venue] || '';
   };

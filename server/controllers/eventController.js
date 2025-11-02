@@ -108,6 +108,15 @@ const eventController = {
         preference_id
       } = req.body;
 
+      // Validate India-only cities
+      const validIndianCities = ['mumbai', 'delhi', 'bangalore', 'hyderabad', 'ahmedabad', 'chennai', 'kolkata', 'pune', 'jaipur', 'lucknow'];
+      if (city && !validIndianCities.includes(city.toLowerCase())) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Only Indian cities are allowed. Please select a city from India.' 
+        });
+      }
+
       // Derive start time from provided time or AI timeline first item
 const aiFirstStart = (ai_generated_content && Array.isArray(ai_generated_content.timeline) && ai_generated_content.timeline.length > 0)
   ? normalizeTime(ai_generated_content.timeline[0]?.time || ai_generated_content.timeline[0]?.startTime || '09:00')
@@ -190,6 +199,15 @@ const safeEventStartTime = time ? normalizeTime(time) : aiFirstStart;
         status,
         ai_generated_content
       } = req.body;
+
+      // Validate India-only cities
+      const validIndianCities = ['mumbai', 'delhi', 'bangalore', 'hyderabad', 'ahmedabad', 'chennai', 'kolkata', 'pune', 'jaipur', 'lucknow'];
+      if (city && !validIndianCities.includes(city.toLowerCase())) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Only Indian cities are allowed. Please select a city from India.' 
+        });
+      }
 
       // Derive start time from provided time or AI timeline first item
 const aiFirstStart = (ai_generated_content && Array.isArray(ai_generated_content.timeline) && ai_generated_content.timeline.length > 0)
