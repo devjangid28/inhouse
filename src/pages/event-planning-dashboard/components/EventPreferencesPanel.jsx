@@ -104,7 +104,22 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
     try {
       const savedData = await preferencesService.savePreferences(preferences);
       setHasUnsavedChanges(false);
+      
+      // Notify parent component that preferences were saved
       if (onSave) onSave(savedData);
+      
+      // Store in localStorage for budget calculator to auto-load
+      localStorage.setItem('event_preferences_cache', JSON.stringify({
+        ...savedData,
+        city: preferences.city,
+        venue: preferences.venue
+      }));
+      
+      console.log('✅ Preferences saved and synced to budget calculator:', {
+        city: preferences.city,
+        venue: preferences.venue,
+        eventType: preferences.eventType
+      });
     } catch (error) {
       console.error('Error saving preferences:', error);
     } finally {

@@ -57,6 +57,14 @@ const BudgetCalculator = () => {
           eventType: budgetEventType || prev.eventType,
           venueType: preferences.venue ? mapVenueToType(preferences.venue) : prev.venueType,
         }));
+        
+        console.log('✅ Budget calculator auto-loaded preferences:', {
+          city: preferences.city,
+          venue: preferences.venue,
+          eventType: budgetEventType,
+          audienceSize: preferences.number_of_people || preferences.numberOfPeople
+        });
+        
         showInfo('Event preferences loaded from dashboard');
       }
     } catch (error) {

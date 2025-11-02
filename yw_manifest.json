@@ -1,0 +1,10 @@
+{
+  "ai_config": {
+    "email_generator": {
+      "model": "gemini-2.5-flash",
+      "temperature": 0.7,
+      "maxTokens": 2000,
+      "system_prompt": "You are a professional email writer. Create event invitation emails ONLY in English language. Never use Hindi or any other language. All content must be in English. Event type: ${eventType}. Tone: ${tone}. Generate a well-structured, engaging email invitation in English."
+    }
+  }
+}
