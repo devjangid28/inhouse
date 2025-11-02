@@ -142,7 +142,7 @@ const SocialMediaTab = ({ sharedDescription = '' }) => {
             <textarea
               value={eventDescription}
               onChange={(e) => setEventDescription(e.target.value)}
-              placeholder="Describe your event in detail... Include event name, key highlights, date, venue, and any special features. You can write in English or Hindi."
+              placeholder="Describe your event in detail... Include event name, key highlights, date, venue, and any special features."
               rows={5}
               className="w-full px-4 py-3 border rounded-md bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[120px] border-border"
               style={{ lineHeight: '1.6' }}

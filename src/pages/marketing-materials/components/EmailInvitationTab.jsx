@@ -163,7 +163,7 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
               onChange={(e) => {
                 onDescriptionChange?.(e.target.value);
               }}
-              placeholder="Describe your event in detail... Include event name, date, venue, key highlights, and any special instructions. You can write in English or Hindi."
+              placeholder="Describe your event in detail... Include event name, date, venue, key highlights, and any special instructions."
               rows={6}
               className="w-full px-4 py-3 border rounded-md bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[150px] border-border"
               style={{ lineHeight: '1.6' }}

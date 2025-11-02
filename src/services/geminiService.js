@@ -7,7 +7,7 @@ class GeminiService {
     try {
       const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-      const prompt = `You are an expert event planner. Based on the following event details, create a comprehensive event plan.
+      const prompt = `You are an expert event planner. Based on the following event details, create a comprehensive event plan. IMPORTANT: Respond ONLY in English language. Do NOT use Hindi, mixed languages, or any non-English content.
 
 Event Type: ${eventType}
 Description: ${eventDescription}
@@ -19,11 +19,11 @@ ${preferences.venueType ? `Venue Type: ${preferences.venueType}` : ''}
 Generate a detailed event plan in JSON format with the following structure:
 {
   "timeline": [
-    {"time": "9:00 AM", "activity": "Activity name", "duration": "30 mins"},
+    {"time": "9:00 AM", "activity": "Activity name in English only", "duration": "30 mins"},
     ...
   ],
   "tasks": [
-    {"task": "Task description", "priority": "high/medium/low", "deadline": "relative time"},
+    {"task": "Task description in English only", "priority": "high/medium/low", "deadline": "relative time"},
     ...
   ],
   "budget": {
@@ -35,12 +35,13 @@ Generate a detailed event plan in JSON format with the following structure:
     "contingency": amount
   },
   "recommendations": [
-    "Recommendation 1",
-    "Recommendation 2",
+    "Recommendation 1 in English only",
+    "Recommendation 2 in English only",
     ...
   ]
 }
 
+CRITICAL: All text fields must be in English language only. No Hindi or mixed language content allowed.
 Provide ONLY the JSON response, no additional text.`;
 
       const result = await model.generateContent(prompt);
@@ -62,7 +63,7 @@ Provide ONLY the JSON response, no additional text.`;
     try {
       const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-      const prompt = `You are a creative designer. Based on the following event details, create poster content suggestions.
+      const prompt = `You are a creative designer. Based on the following event details, create poster content suggestions. IMPORTANT: Respond ONLY in English language. Do NOT use Hindi, mixed languages, or any non-English content.
 
 Event Type: ${eventType}
 Description: ${eventDescription}
@@ -70,14 +71,15 @@ Design Style: ${style}
 
 Generate poster content suggestions in JSON format:
 {
-  "headline": "Eye-catching headline",
-  "subheadline": "Supporting text",
-  "keyPoints": ["Point 1", "Point 2", "Point 3"],
-  "callToAction": "Action text",
+  "headline": "Eye-catching headline in English only",
+  "subheadline": "Supporting text in English only",
+  "keyPoints": ["Point 1 in English", "Point 2 in English", "Point 3 in English"],
+  "callToAction": "Action text in English only",
   "colorScheme": ["#color1", "#color2", "#color3"],
-  "designNotes": "Brief design suggestions"
+  "designNotes": "Brief design suggestions in English only"
 }
 
+CRITICAL: All text content must be in English language only. No Hindi or mixed language content allowed.
 Provide ONLY the JSON response, no additional text.`;
 
       const result = await model.generateContent(prompt);
@@ -99,7 +101,7 @@ Provide ONLY the JSON response, no additional text.`;
     try {
       const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-      const prompt = `You are a professional email writer. Create an event invitation email based on these details.
+      const prompt = `You are a professional email writer. Create an event invitation email based on these details. IMPORTANT: Respond ONLY in English language. Do NOT use Hindi, mixed languages, or any non-English content.
 
 Event Type: ${eventType}
 Description: ${eventDescription}
@@ -107,15 +109,15 @@ Tone: ${tone}
 
 Generate an email invitation in JSON format:
 {
-  "subject": "Email subject line",
-  "greeting": "Email greeting",
-  "body": "Main email body with multiple paragraphs",
-  "eventDetails": "Formatted event details section",
-  "closing": "Email closing",
-  "signature": "Email signature"
+  "subject": "Email subject line in English only",
+  "greeting": "Email greeting in English only",
+  "body": "Main email body with multiple paragraphs in English only",
+  "eventDetails": "Formatted event details section in English only",
+  "closing": "Email closing in English only",
+  "signature": "Email signature in English only"
 }
 
-Make the email engaging and appropriate for the ${tone} tone. Support both English and Hindi content.
+Make the email engaging and appropriate for the ${tone} tone. CRITICAL: All content must be in English language only. No Hindi, Hindi-English mix, or any non-English content allowed.
 Provide ONLY the JSON response, no additional text.`;
 
       const result = await model.generateContent(prompt);
@@ -146,7 +148,7 @@ Provide ONLY the JSON response, no additional text.`;
 
       const limit = characterLimits[platform] || 2200;
 
-      const prompt = `You are a social media expert. Create an engaging ${platform} caption for this event.
+      const prompt = `You are a social media expert. Create an engaging ${platform} caption for this event. IMPORTANT: Respond ONLY in English language. Do NOT use Hindi, mixed languages, or any non-English content.
 
 Event Type: ${eventType}
 Description: ${eventDescription}
@@ -155,13 +157,13 @@ Character Limit: ${limit}
 
 Generate a social media caption in JSON format:
 {
-  "caption": "The complete caption text with emojis and line breaks",
+  "caption": "The complete caption text with emojis and line breaks in English only",
   "hashtags": ["#hashtag1", "#hashtag2", ...],
   "characterCount": actual_character_count,
-  "callToAction": "Specific call to action"
+  "callToAction": "Specific call to action in English only"
 }
 
-Make it engaging, platform-appropriate, and include relevant emojis. Support both English and Hindi content.
+Make it engaging, platform-appropriate, and include relevant emojis. CRITICAL: All text content must be in English language only. No Hindi or mixed language content allowed.
 Provide ONLY the JSON response, no additional text.`;
 
       const result = await model.generateContent(prompt);
@@ -183,22 +185,22 @@ Provide ONLY the JSON response, no additional text.`;
     try {
       const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-      const prompt = `You are a marketing expert. Create comprehensive marketing content for this event.
+      const prompt = `You are a marketing expert. Create comprehensive marketing content for this event. IMPORTANT: Respond ONLY in English language. Do NOT use Hindi, mixed languages, or any non-English content.
 
 Event Type: ${eventType}
 Description: ${eventDescription}
 
 Generate marketing materials in JSON format:
 {
-  "tagline": "Memorable event tagline",
-  "elevator_pitch": "30-second description",
-  "key_benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
-  "target_audience": "Description of ideal attendees",
-  "unique_selling_points": ["USP 1", "USP 2", "USP 3"],
-  "social_media_strategy": "Brief strategy overview"
+  "tagline": "Memorable event tagline in English only",
+  "elevator_pitch": "30-second description in English only",
+  "key_benefits": ["Benefit 1 in English", "Benefit 2 in English", "Benefit 3 in English"],
+  "target_audience": "Description of ideal attendees in English only",
+  "unique_selling_points": ["USP 1 in English", "USP 2 in English", "USP 3 in English"],
+  "social_media_strategy": "Brief strategy overview in English only"
 }
 
-Support both English and Hindi content.
+CRITICAL: All content must be in English language only. No Hindi or mixed language content allowed.
 Provide ONLY the JSON response, no additional text.`;
 
       const result = await model.generateContent(prompt);
