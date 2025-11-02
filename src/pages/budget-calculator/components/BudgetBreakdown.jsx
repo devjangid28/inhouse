@@ -211,104 +211,77 @@ const BudgetBreakdown = ({
   return (
     <div className="bg-card rounded-lg border border-border shadow-card">
       {/* Header */}
-      <div className="p-6 border-b border-border">
+      <div className="p-6 border-b border-border bg-gradient-to-r from-success/5 to-primary/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="flex items-center justify-center w-10 h-10 bg-success/10 rounded-lg">
-              <Icon name="IndianRupee" size={20} className="text-success" />
+              <Icon name="Receipt" size={20} className="text-success" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-foreground">Budget Breakdown</h2>
-              <p className="text-sm text-muted-foreground">Detailed cost analysis</p>
+              <h2 className="text-xl font-semibold text-foreground">Your Budget Summary</h2>
+              <p className="text-sm text-muted-foreground">Estimated costs breakdown</p>
             </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onSave}
-              iconName="Save"
-              iconPosition="left"
-            >
-              Save
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              onClick={onExport}
-              iconName="Download"
-              iconPosition="left"
-            >
-              Export
-            </Button>
           </div>
         </div>
       </div>
       {/* Grand Total */}
-      <div className="p-6 border-b border-border bg-muted/30">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-foreground">Total Estimated Cost</h3>
-            <p className="text-sm text-muted-foreground">
-              For {formData?.audienceSize || 0} guests in {formData?.city?.replace('-', ' ') || 'selected city'}
-            </p>
-          </div>
-          <div className="text-right">
-            {isCalculating ? (
-              <div className="flex items-center space-x-2">
-                <Icon name="Loader2" size={20} className="text-primary animate-spin" />
-                <span className="text-lg font-semibold text-muted-foreground">Calculating...</span>
-              </div>
-            ) : (
-              <div className="text-3xl font-bold text-success">
-                {formatCurrency(budget?.grandTotal)}
-              </div>
-            )}
-          </div>
+      <div className="p-8 border-b border-border bg-gradient-to-br from-success/10 to-primary/10">
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground mb-2">Total Estimated Cost</p>
+          {isCalculating ? (
+            <div className="flex items-center justify-center space-x-2">
+              <Icon name="Loader2" size={24} className="text-primary animate-spin" />
+              <span className="text-xl font-semibold text-muted-foreground">Calculating...</span>
+            </div>
+          ) : (
+            <div className="text-5xl font-bold text-success mb-2">
+              {formatCurrency(budget?.grandTotal)}
+            </div>
+          )}
+          <p className="text-sm text-muted-foreground">
+            For {formData?.audienceSize || 0} guests • {formData?.duration || 0} hours
+          </p>
         </div>
       </div>
       {/* Budget Sections */}
-      <div className="p-6 space-y-4">
+      <div className="p-6 space-y-3">
         {budgetSections?.map((section) => (
-          <div key={section?.id} className="border border-border rounded-lg overflow-hidden">
+          <div key={section?.id} className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-all">
             <button
               onClick={() => toggleSection(section?.id)}
-              className="w-full flex items-center justify-between p-4 bg-muted/20 hover:bg-muted/40 transition-smooth"
+              className="w-full flex items-center justify-between p-4 hover:bg-muted/20 transition-smooth"
             >
               <div className="flex items-center space-x-3">
-                <div className={`flex items-center justify-center w-8 h-8 ${section?.bgColor} rounded-lg`}>
-                  <Icon name={section?.icon} size={16} className={section?.color} />
+                <div className={`flex items-center justify-center w-10 h-10 ${section?.bgColor} rounded-lg`}>
+                  <Icon name={section?.icon} size={18} className={section?.color} />
                 </div>
                 <div className="text-left">
-                  <h4 className="font-medium text-foreground">{section?.title}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {section?.data?.items?.length} item{section?.data?.items?.length !== 1 ? 's' : ''}
-                  </p>
+                  <h4 className="font-semibold text-foreground text-base">{section?.title}</h4>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <span className="text-lg font-semibold text-foreground">
+                <span className="text-xl font-bold text-foreground">
                   {formatCurrency(section?.data?.total)}
                 </span>
                 <Icon 
                   name={expandedSections?.[section?.id] ? "ChevronUp" : "ChevronDown"} 
-                  size={16} 
+                  size={18} 
                   className="text-muted-foreground" 
                 />
               </div>
             </button>
 
             {expandedSections?.[section?.id] && (
-              <div className="p-4 border-t border-border">
+              <div className="px-4 pb-4 border-t border-border bg-muted/5">
                 {section?.data?.items?.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2 pt-3">
                     {section?.data?.items?.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-foreground">{item?.name}</p>
-                          <p className="text-sm text-muted-foreground">{item?.description}</p>
+                      <div key={index} className="flex items-start justify-between py-2">
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground text-sm">{item?.name}</p>
+                          <p className="text-xs text-muted-foreground">{item?.description}</p>
                         </div>
-                        <span className="font-semibold text-foreground">
+                        <span className="font-semibold text-foreground ml-4 flex-shrink-0">
                           {formatCurrency(item?.cost)}
                         </span>
                       </div>
@@ -325,32 +298,47 @@ const BudgetBreakdown = ({
         ))}
       </div>
       {/* Summary Stats */}
-      <div className="p-6 border-t border-border bg-muted/20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">Per Guest</p>
-            <p className="text-lg font-semibold text-foreground">
+      <div className="p-6 border-t border-border bg-muted/10">
+        <h3 className="text-sm font-medium text-muted-foreground mb-4 text-center">Quick Insights</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center p-4 bg-card rounded-lg border border-border">
+            <Icon name="Users" size={20} className="text-primary mx-auto mb-2" />
+            <p className="text-xs text-muted-foreground mb-1">Cost Per Guest</p>
+            <p className="text-lg font-bold text-foreground">
               {formatCurrency(formData?.audienceSize > 0 ? budget?.grandTotal / formData?.audienceSize : 0)}
             </p>
           </div>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">Per Hour</p>
-            <p className="text-lg font-semibold text-foreground">
+          <div className="text-center p-4 bg-card rounded-lg border border-border">
+            <Icon name="Clock" size={20} className="text-secondary mx-auto mb-2" />
+            <p className="text-xs text-muted-foreground mb-1">Cost Per Hour</p>
+            <p className="text-lg font-bold text-foreground">
               {formatCurrency(formData?.duration > 0 ? budget?.grandTotal / formData?.duration : 0)}
             </p>
           </div>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">Largest Category</p>
-            <p className="text-lg font-semibold text-foreground">
-              {budget?.catering?.total > budget?.venue?.total ? 'Catering' : 'Venue'}
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">Last Updated</p>
-            <p className="text-lg font-semibold text-foreground">
-              {new Date()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </p>
-          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center space-x-2 mt-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSave}
+            iconName="Save"
+            iconPosition="left"
+            className="flex-1"
+          >
+            Save Budget
+          </Button>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={onExport}
+            iconName="Download"
+            iconPosition="left"
+            className="flex-1"
+          >
+            Export PDF
+          </Button>
         </div>
       </div>
     </div>

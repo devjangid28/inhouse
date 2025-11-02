@@ -11,6 +11,7 @@ import { cn } from '../../../utils/cn';
 const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
   const [preferences, setPreferences] = useState({
     venue: '',
+    city: '',
     numberOfPeople: 50,
     budget: 50000,
     eventDate: '',
@@ -34,6 +35,19 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
     { value: 'Sports Tournament', label: 'Sports Tournament' },
   ];
 
+  const cityOptions = [
+    { value: 'new-york', label: 'New York, NY' },
+    { value: 'los-angeles', label: 'Los Angeles, CA' },
+    { value: 'chicago', label: 'Chicago, IL' },
+    { value: 'houston', label: 'Houston, TX' },
+    { value: 'phoenix', label: 'Phoenix, AZ' },
+    { value: 'philadelphia', label: 'Philadelphia, PA' },
+    { value: 'san-antonio', label: 'San Antonio, TX' },
+    { value: 'san-diego', label: 'San Diego, CA' },
+    { value: 'dallas', label: 'Dallas, TX' },
+    { value: 'austin', label: 'Austin, TX' },
+  ];
+
   const venueOptions = [
     { value: 'taj-palace-lawns', label: 'Taj Palace Lawns - Luxury Garden with Gazebo' },
     { value: 'leela-ambience', label: 'The Leela Ambience - Grand Ballroom' },
@@ -53,11 +67,12 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
       if (savedPreferences) {
         const loadedPrefs = {
           venue: savedPreferences.venue || '',
-          numberOfPeople: savedPreferences.numberOfPeople || 50,
+          city: savedPreferences.city || '',
+          numberOfPeople: savedPreferences.numberOfPeople || savedPreferences.number_of_people || 50,
           budget: savedPreferences.budget || 50000,
-          eventDate: savedPreferences.eventDate || '',
-          eventTime: savedPreferences.eventTime || '',
-          eventType: savedPreferences.eventType || '',
+          eventDate: savedPreferences.eventDate || savedPreferences.event_date || '',
+          eventTime: savedPreferences.eventTime || savedPreferences.event_time || '',
+          eventType: savedPreferences.eventType || savedPreferences.event_type || '',
         };
         setPreferences(loadedPrefs);
         if (onLoad) onLoad(savedPreferences);
@@ -127,6 +142,15 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
         />
 
         <Dropdown
+          label="City / Location"
+          value={preferences.city}
+          onChange={(value) => handleChange('city', value)}
+          options={cityOptions}
+          placeholder="Select city..."
+          icon={MapPin}
+        />
+
+        <Dropdown
           label="Venue"
           value={preferences.venue}
           onChange={(value) => handleChange('venue', value)}
@@ -186,6 +210,14 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-500 mb-1">Event Type</p>
                 <p className="text-sm font-medium text-gray-900">{preferences.eventType}</p>
+              </div>
+            )}
+            {preferences.city && (
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-xs text-gray-500 mb-1">City</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {cityOptions.find(c => c.value === preferences.city)?.label}
+                </p>
               </div>
             )}
             {preferences.venue && (

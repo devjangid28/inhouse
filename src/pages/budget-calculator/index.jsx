@@ -47,10 +47,14 @@ const BudgetCalculator = () => {
     try {
       const preferences = await preferencesService.getLatestPreferences();
       if (preferences) {
+        // Map event type from dashboard format to budget format
+        const budgetEventType = mapEventTypeToBudget(preferences.event_type || preferences.eventType);
+        
         setFormData(prev => ({
           ...prev,
-          audienceSize: preferences.number_of_people || prev.audienceSize,
-          eventType: preferences.event_type || prev.eventType,
+          city: preferences.city || prev.city,
+          audienceSize: preferences.number_of_people || preferences.numberOfPeople || prev.audienceSize,
+          eventType: budgetEventType || prev.eventType,
           venueType: preferences.venue ? mapVenueToType(preferences.venue) : prev.venueType,
         }));
         showInfo('Event preferences loaded from dashboard');
@@ -62,14 +66,31 @@ const BudgetCalculator = () => {
 
   const mapVenueToType = (venue) => {
     const venueMapping = {
-      'taj-palace-lawns': 'luxury-outdoor',
-      'leela-ambience': 'grand-ballroom',
-      'itc-maurya': 'conference-hall',
-      'oberoi-sky-terrace': 'rooftop',
-      'trident-poolside': 'outdoor',
-      'lalit-ashok': 'convention-center'
+      'taj-palace-lawns': 'outdoor-venue',
+      'leela-ambience': 'hotel-ballroom',
+      'itc-maurya': 'conference-center',
+      'oberoi-sky-terrace': 'rooftop-venue',
+      'trident-poolside': 'outdoor-venue',
+      'lalit-ashok': 'conference-center'
     };
     return venueMapping[venue] || '';
+  };
+
+  const mapEventTypeToBudget = (dashboardEventType) => {
+    // Map dashboard event types to budget calculator event types
+    const eventTypeMapping = {
+      'Corporate Conference': 'corporate',
+      'Wedding Celebration': 'wedding',
+      'Birthday Party': 'birthday',
+      'Product Launch': 'product-launch',
+      'Academic Seminar': 'academic',
+      'Networking Event': 'networking',
+      'Charity Fundraiser': 'fundraiser',
+      'Music Concert': 'corporate',
+      'Art Exhibition': 'corporate',
+      'Sports Tournament': 'corporate'
+    };
+    return eventTypeMapping[dashboardEventType] || dashboardEventType?.toLowerCase()?.replace(/\s+/g, '-') || '';
   };
 
   // Auto-calculate when form data changes
@@ -287,32 +308,11 @@ const BudgetCalculator = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Page Header */}
           <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">Budget Calculator</h1>
-                <p className="text-muted-foreground mt-2">
-                  Generate dynamic cost estimates with real-time calculations
-                </p>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant={showComparison ? "default" : "outline"}
-                  onClick={() => setShowComparison(!showComparison)}
-                  iconName="BarChart3"
-                  iconPosition="left"
-                >
-                  {showComparison ? 'Hide' : 'Show'} Comparison
-                </Button>
-                <ProgressIndicator
-                  currentStep={isFormValid ? 4 : 2}
-                  totalSteps={5}
-                  completedTasks={12}
-                  totalTasks={15}
-                  budgetCompleted={isFormValid}
-                  marketingCompleted={false}
-                  className="w-64"
-                />
-              </div>
+            <div className="text-center mb-6">
+              <h1 className="text-4xl font-bold text-foreground mb-3">Event Budget Calculator</h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Plan your event budget with confidence. Get instant cost estimates tailored to your needs.
+              </p>
             </div>
           </div>
 
@@ -328,19 +328,7 @@ const BudgetCalculator = () => {
                 isCalculating={isCalculating}
               />
 
-              {/* Comparison Panel */}
-              {showComparison && (
-                <BudgetComparison
-                  scenarios={scenarios}
-                  onAddScenario={handleAddScenario}
-                  onRemoveScenario={handleRemoveScenario}
-                  onSelectScenario={handleSelectScenario}
-                  activeScenario={activeScenario}
-                  onExportComparison={handleExportComparison}
-                  onShareScenarios={handleShareScenarios}
-                  onClearAll={handleClearAllScenarios}
-                />
-              )}
+
             </div>
 
             {/* Right Column - Budget Breakdown */}
@@ -403,38 +391,7 @@ const BudgetCalculator = () => {
                 </div>
               )}
 
-              {/* Quick Stats */}
-              {isFormValid && (
-                <div className="bg-card rounded-lg border border-border shadow-card p-6">
-                  <h3 className="text-lg font-semibold text-foreground mb-4">Quick Insights</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-muted/20 rounded-lg">
-                      <Icon name="Users" size={20} className="text-primary mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">Audience Size</p>
-                      <p className="text-xl font-bold text-foreground">{formData?.audienceSize}</p>
-                    </div>
-                    <div className="text-center p-4 bg-muted/20 rounded-lg">
-                      <Icon name="Clock" size={20} className="text-secondary mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">Duration</p>
-                      <p className="text-xl font-bold text-foreground">{formData?.duration}h</p>
-                    </div>
-                    <div className="text-center p-4 bg-muted/20 rounded-lg">
-                      <Icon name="MapPin" size={20} className="text-accent mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">City</p>
-                      <p className="text-sm font-semibold text-foreground">
-                        {formData?.city ? formData?.city?.replace('-', ' ')?.replace(/\b\w/g, l => l?.toUpperCase()) : 'Not selected'}
-                      </p>
-                    </div>
-                    <div className="text-center p-4 bg-muted/20 rounded-lg">
-                      <Icon name="Settings" size={20} className="text-warning mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">Services</p>
-                      <p className="text-xl font-bold text-foreground">
-                        {formData?.additionalServices?.length || 0}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+
             </div>
           </div>
         </div>

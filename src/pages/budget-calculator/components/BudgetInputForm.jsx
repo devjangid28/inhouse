@@ -11,7 +11,6 @@ const BudgetInputForm = ({
   onCalculate,
   isCalculating = false 
 }) => {
-  const [activeSection, setActiveSection] = useState('basic');
 
   const cityOptions = [
     { value: 'new-york', label: 'New York, NY', description: 'High cost metropolitan area' },
@@ -125,41 +124,27 @@ const BudgetInputForm = ({
     onTemplateSelect(template?.data);
   };
 
-  const sections = [
-    { id: 'basic', label: 'Basic Info', icon: 'Info' },
-    { id: 'venue', label: 'Venue & Catering', icon: 'MapPin' },
-    { id: 'services', label: 'Additional Services', icon: 'Plus' }
-  ];
-
   return (
     <div className="bg-card rounded-lg border border-border shadow-card">
       {/* Header */}
       <div className="p-6 border-b border-border">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg">
-              <Icon name="Calculator" size={20} className="text-primary" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-foreground">Budget Calculator</h2>
-              <p className="text-sm text-muted-foreground">Configure your event parameters</p>
-            </div>
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg">
+            <Icon name="Calculator" size={20} className="text-primary" />
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onCalculate}
-            loading={isCalculating}
-            iconName="RefreshCw"
-            iconPosition="left"
-          >
-            Recalculate
-          </Button>
+          <div>
+            <h2 className="text-xl font-semibold text-foreground">Event Budget Calculator</h2>
+            <p className="text-sm text-muted-foreground">Fill in the details below to generate your budget</p>
+          </div>
         </div>
       </div>
+
       {/* Event Templates */}
-      <div className="p-6 border-b border-border">
-        <h3 className="text-sm font-medium text-foreground mb-3">Quick Templates</h3>
+      <div className="p-6 border-b border-border bg-muted/20">
+        <h3 className="text-sm font-medium text-foreground mb-3 flex items-center">
+          <Icon name="Sparkles" size={16} className="text-primary mr-2" />
+          Quick Start Templates
+        </h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {eventTemplates?.map((template) => (
             <Button
@@ -175,30 +160,17 @@ const BudgetInputForm = ({
           ))}
         </div>
       </div>
-      {/* Section Navigation */}
-      <div className="px-6 pt-4">
-        <div className="flex space-x-1 bg-muted rounded-lg p-1">
-          {sections?.map((section) => (
-            <button
-              key={section?.id}
-              onClick={() => setActiveSection(section?.id)}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-smooth flex-1 justify-center ${
-                activeSection === section?.id
-                  ? 'bg-card text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Icon name={section?.icon} size={14} />
-              <span>{section?.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-      {/* Form Content */}
+
+      {/* Form Content - Single Page */}
       <div className="p-6">
-        {/* Basic Information */}
-        {activeSection === 'basic' && (
-          <div className="space-y-6">
+        <div className="space-y-8">
+          {/* Step 1: Basic Information */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-xs font-bold">1</div>
+              <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
+            </div>
+
             <Select
               label="Event City"
               description="Location affects pricing and vendor availability"
@@ -211,7 +183,7 @@ const BudgetInputForm = ({
 
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Expected Audience Size
+                Expected Audience Size <span className="text-destructive">*</span>
               </label>
               <div className="space-y-3">
                 <input
@@ -224,7 +196,7 @@ const BudgetInputForm = ({
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>10 people</span>
-                  <span className="font-medium text-primary">{formData?.audienceSize} people</span>
+                  <span className="font-medium text-primary text-base">{formData?.audienceSize} people</span>
                   <span>1000+ people</span>
                 </div>
               </div>
@@ -238,23 +210,15 @@ const BudgetInputForm = ({
               onChange={(value) => handleInputChange('eventType', value)}
               required
             />
-
-            <Input
-              label="Event Duration (hours)"
-              type="number"
-              min="1"
-              max="24"
-              value={formData?.duration}
-              onChange={(e) => handleInputChange('duration', parseInt(e?.target?.value))}
-              placeholder="Enter duration in hours"
-              description="Total event duration including setup and cleanup"
-            />
           </div>
-        )}
 
-        {/* Venue & Catering */}
-        {activeSection === 'venue' && (
-          <div className="space-y-6">
+          {/* Step 2: Venue & Catering */}
+          <div className="space-y-4 pt-6 border-t border-border">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-xs font-bold">2</div>
+              <h3 className="text-lg font-semibold text-foreground">Venue & Catering</h3>
+            </div>
+
             <Select
               label="Venue Type"
               description="Venue category affects base rental costs"
@@ -273,38 +237,28 @@ const BudgetInputForm = ({
               required
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Setup Time (hours)"
-                type="number"
-                min="0"
-                max="8"
-                value={formData?.setupTime || 2}
-                onChange={(e) => handleInputChange('setupTime', parseInt(e?.target?.value))}
-                placeholder="2"
-                description="Additional setup time needed"
-              />
-
-              <Input
-                label="Cleanup Time (hours)"
-                type="number"
-                min="0"
-                max="4"
-                value={formData?.cleanupTime || 1}
-                onChange={(e) => handleInputChange('cleanupTime', parseInt(e?.target?.value))}
-                placeholder="1"
-                description="Post-event cleanup duration"
-              />
-            </div>
+            <Input
+              label="Event Duration (hours)"
+              type="number"
+              min="1"
+              max="24"
+              value={formData?.duration}
+              onChange={(e) => handleInputChange('duration', parseInt(e?.target?.value))}
+              placeholder="Enter duration in hours"
+              description="Total event duration"
+            />
           </div>
-        )}
 
-        {/* Additional Services */}
-        {activeSection === 'services' && (
-          <div className="space-y-6">
+          {/* Step 3: Additional Services (Optional) */}
+          <div className="space-y-4 pt-6 border-t border-border">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="flex items-center justify-center w-6 h-6 bg-muted text-foreground rounded-full text-xs font-bold">3</div>
+              <h3 className="text-lg font-semibold text-foreground">Additional Services <span className="text-sm font-normal text-muted-foreground">(Optional)</span></h3>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-foreground mb-3">
-                Additional Services
+                Select Add-on Services
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
@@ -313,9 +267,7 @@ const BudgetInputForm = ({
                   { id: 'music', label: 'Music/DJ', icon: 'Music' },
                   { id: 'flowers', label: 'Floral Arrangements', icon: 'Flower' },
                   { id: 'security', label: 'Security', icon: 'Shield' },
-                  { id: 'parking', label: 'Parking', icon: 'Car' },
-                  { id: 'registration', label: 'Registration Desk', icon: 'ClipboardList' },
-                  { id: 'transportation', label: 'Transportation', icon: 'Bus' }
+                  { id: 'parking', label: 'Parking', icon: 'Car' }
                 ]?.map((service) => (
                   <label
                     key={service?.id}
@@ -343,17 +295,22 @@ const BudgetInputForm = ({
                 ))}
               </div>
             </div>
-
-            <Input
-              label="Special Requirements"
-              type="text"
-              value={formData?.specialRequirements || ''}
-              onChange={(e) => handleInputChange('specialRequirements', e?.target?.value)}
-              placeholder="Any special needs or custom requirements..."
-              description="Additional requirements that may affect pricing"
-            />
           </div>
-        )}
+
+          {/* Helper Text */}
+          <div className="bg-muted/30 border border-border rounded-lg p-4 flex items-start space-x-3">
+            <Icon name="Info" size={18} className="text-primary mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-muted-foreground">
+              <p className="font-medium text-foreground mb-1">How it works:</p>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Fill in the required fields marked with an asterisk (*)</li>
+                <li>Your budget will automatically calculate as you type</li>
+                <li>View detailed breakdown on the right side panel</li>
+                <li>Export or save your budget for future reference</li>
+              </ol>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

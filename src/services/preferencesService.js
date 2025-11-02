@@ -71,6 +71,7 @@ class PreferencesService {
       const preferencesData = {
         user_id: userId,
         venue: preferences.venue || '',
+        city: preferences.city || '',
         number_of_people: preferences.numberOfPeople || preferences.number_of_people || 0,
         budget: preferences.budget || 0,
         event_date: preferences.eventDate || preferences.event_date || '',
@@ -104,6 +105,7 @@ class PreferencesService {
       const cachedPreferences = {
         user_id: userId,
         venue: preferences.venue || '',
+        city: preferences.city || '',
         number_of_people: preferences.numberOfPeople || preferences.number_of_people || 0,
         budget: preferences.budget || 0,
         event_date: preferences.eventDate || preferences.event_date || '',
