@@ -13,16 +13,27 @@ import EventPreferencesPanel from './components/EventPreferencesPanel';
 import { eventService } from '../../services/eventService';
 import { geminiService } from '../../services/geminiService';
 import { supabase } from '../../lib/supabaseClient';
+import { useEventPlanning } from '../../contexts/EventPlanningContext';
+import Button from '../../components/ui/Button';
+import Icon from '../../components/AppIcon';
 
 const EventPlanningDashboard = () => {
   const navigate = useNavigate();
   const { notifications, showSuccess, showError, showLoading, dismissNotification } = useNotifications();
+  const {
+    dashboardData,
+    updateDashboardData,
+    eventData,
+    setEventData,
+    generatedContent,
+    setGeneratedContent,
+    hasGeneratedContent,
+    setHasGeneratedContent,
+    saveSharedPreferences
+  } = useEventPlanning();
   
   const [isGenerating, setIsGenerating] = useState(false);
-  const [hasGeneratedContent, setHasGeneratedContent] = useState(false);
-  const [eventData, setEventData] = useState(null);
-  const [generatedContent, setGeneratedContent] = useState([]);
-  const [selectedEventType, setSelectedEventType] = useState('');
+  const [selectedEventType, setSelectedEventType] = useState(dashboardData.eventType || '');
 
   // Mock generated content data
   const mockGeneratedContent = [
@@ -201,33 +212,36 @@ const EventPlanningDashboard = () => {
     };
   }, []);
 
-  const handleGenerateEvent = async (formData) => {
+  const handleGenerateEvent = async (formData, isRegenerate = false) => {
     setIsGenerating(true);
-    const loadingId = showLoading('Generating your event plan with AI...');
+    const loadingId = showLoading(isRegenerate ? 'Regenerating your event plan...' : 'Generating your event plan with AI...');
 
     try {
+      // Merge with existing dashboard data if regenerating
+      const mergedFormData = isRegenerate ? { ...dashboardData, ...formData } : formData;
+
       const eventPlan = await geminiService.generateEventPlan(
-        formData.prompt || formData.description,
-        formData.eventType,
+        mergedFormData.prompt || mergedFormData.description,
+        mergedFormData.eventType,
         {
-          audienceSize: formData.audienceSize,
-          budget: formData.budget,
-          duration: formData.duration,
-          venueType: formData.venueType
+          audienceSize: mergedFormData.audienceSize || dashboardData.audienceSize,
+          budget: mergedFormData.budget || dashboardData.budget,
+          duration: mergedFormData.duration || dashboardData.duration,
+          venueType: mergedFormData.venueType || dashboardData.venueType
         }
       );
 
       const savedEvent = await eventService.createEvent({
-        eventName: formData.eventName || formData.eventType || 'New Event',
-        eventType: formData.eventType,
-        description: formData.prompt || formData.description,
-        date: formData.date,
-        time: formData.time,
-        location: formData.location,
-        city: formData.city,
-        venueType: formData.venueType,
-        audienceSize: formData.audienceSize,
-        duration: formData.duration,
+        eventName: mergedFormData.eventName || mergedFormData.eventType || 'New Event',
+        eventType: mergedFormData.eventType,
+        description: mergedFormData.prompt || mergedFormData.description,
+        date: mergedFormData.date,
+        time: mergedFormData.time,
+        location: mergedFormData.location,
+        city: mergedFormData.city,
+        venueType: mergedFormData.venueType,
+        audienceSize: mergedFormData.audienceSize,
+        duration: mergedFormData.duration,
         ai_generated_content: eventPlan
       });
 
@@ -236,9 +250,9 @@ const EventPlanningDashboard = () => {
         .insert({
           event_id: savedEvent.id,
           content_type: 'event_plan',
-          prompt: formData.prompt || formData.description,
+          prompt: mergedFormData.prompt || mergedFormData.description,
           generated_content: eventPlan,
-          metadata: { eventType: formData.eventType, timestamp: new Date().toISOString() }
+          metadata: { eventType: mergedFormData.eventType, timestamp: new Date().toISOString() }
         })
         .select()
         .maybeSingle();
@@ -302,12 +316,15 @@ const EventPlanningDashboard = () => {
         }
       ];
 
+      // Update shared context
+      updateDashboardData(mergedFormData);
       setEventData(savedEvent);
       setGeneratedContent(generatedContentFromAI);
       setHasGeneratedContent(true);
+      await saveSharedPreferences();
 
       dismissNotification(loadingId);
-      showSuccess('Event plan generated with AI and saved successfully!');
+      showSuccess(isRegenerate ? 'Event plan regenerated successfully!' : 'Event plan generated with AI and saved successfully!');
 
     } catch (error) {
       console.error('Error creating event:', error);
@@ -316,6 +333,11 @@ const EventPlanningDashboard = () => {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleRegenerateEvent = () => {
+    // Regenerate with existing data
+    handleGenerateEvent(dashboardData, true);
   };
 
   const handleContentAction = (action, contentId) => {
@@ -356,7 +378,9 @@ const EventPlanningDashboard = () => {
     }
   };
 
-  const handlePreferencesSave = (savedData) => {
+  const handlePreferencesSave = async (savedData) => {
+    updateDashboardData(savedData);
+    await saveSharedPreferences();
     showSuccess('Event preferences saved successfully!');
   };
 
@@ -364,11 +388,16 @@ const EventPlanningDashboard = () => {
     console.log('Preferences loaded:', loadedData);
     if (loadedData?.eventType) {
       setSelectedEventType(loadedData.eventType);
+      updateDashboardData({ eventType: loadedData.eventType });
+    }
+    if (loadedData?.city) {
+      updateDashboardData({ city: loadedData.city });
     }
   };
 
   const handleEventTypeChange = (eventType) => {
     setSelectedEventType(eventType);
+    updateDashboardData({ eventType });
   };
 
   const scrollToForm = () => {
@@ -463,6 +492,29 @@ const EventPlanningDashboard = () => {
                     />
                   </div>
 
+                  {/* Regenerate Event Plan Button */}
+                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-200 p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-foreground mb-1 flex items-center">
+                          <Icon name="Sparkles" size={20} className="mr-2 text-indigo-600" />
+                          Want to Create a New Event Plan?
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Generate a fresh event plan without losing your current data and preferences
+                        </p>
+                      </div>
+                      <Button
+                        onClick={handleRegenerateEvent}
+                        disabled={isGenerating}
+                        className="ml-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200 flex items-center"
+                      >
+                        <Icon name="RefreshCw" size={18} className={`mr-2 ${isGenerating ? 'animate-spin' : ''}`} />
+                        {isGenerating ? 'Regenerating...' : 'Regenerate Plan'}
+                      </Button>
+                    </div>
+                  </div>
+
                   {/* Generated Content Cards */}
                   <div>
                     <div className="flex items-center justify-between mb-6">
@@ -526,7 +578,7 @@ const EventPlanningDashboard = () => {
       <NotificationToast
         notifications={notifications}
         onDismiss={dismissNotification}
-        position="top-right"
+        position="below-header"
       />
     </div>
   );

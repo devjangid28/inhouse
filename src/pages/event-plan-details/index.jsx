@@ -688,7 +688,7 @@ const EventPlanDetails = () => {
       <NotificationToast
         notifications={notifications}
         onDismiss={dismissNotification}
-        position="top-right"
+        position="below-header"
       />
     </div>
   );

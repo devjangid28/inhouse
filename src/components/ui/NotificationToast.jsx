@@ -22,6 +22,8 @@ const NotificationToast = ({
         return 'top-4 left-1/2 transform -translate-x-1/2';
       case 'top-right':
         return 'top-4 right-4';
+      case 'below-header':
+        return 'top-20 left-1/2 transform -translate-x-1/2';
       case 'bottom-left':
         return 'bottom-4 left-4';
       case 'bottom-center':

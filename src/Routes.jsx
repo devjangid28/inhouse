@@ -5,6 +5,7 @@ import ErrorBoundary from "components/ErrorBoundary";
 import ProtectedRoute from "components/ProtectedRoute";
 import NotFound from "pages/NotFound";
 import { AuthProvider } from "contexts/AuthContext";
+import { EventPlanningProvider } from "contexts/EventPlanningContext";
 import Login from "pages/login";
 import Signup from "pages/signup";
 import ForgotPassword from "pages/forgot-password";
@@ -19,9 +20,10 @@ const Routes = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ErrorBoundary>
-          <ScrollToTop />
-          <RouterRoutes>
+        <EventPlanningProvider>
+          <ErrorBoundary>
+            <ScrollToTop />
+            <RouterRoutes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -70,6 +72,7 @@ const Routes = () => {
             <Route path="*" element={<NotFound />} />
           </RouterRoutes>
         </ErrorBoundary>
+        </EventPlanningProvider>
       </AuthProvider>
     </BrowserRouter>
   );

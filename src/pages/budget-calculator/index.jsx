@@ -9,26 +9,36 @@ import BudgetComparison from './components/BudgetComparison';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import { preferencesService } from '../../services/preferencesService';
+import { useEventPlanning } from '../../contexts/EventPlanningContext';
 
 const BudgetCalculator = () => {
-  const [formData, setFormData] = useState({
-    city: '',
-    audienceSize: 50,
-    eventType: '',
-    venueType: '',
-    cateringType: '',
-    duration: 4,
-    setupTime: 2,
-    cleanupTime: 1,
-    additionalServices: [],
-    specialRequirements: ''
-  });
+  const {
+    budgetData: contextBudgetData,
+    updateBudgetData,
+    dashboardData,
+    calculatedBudget,
+    setCalculatedBudget,
+    saveSharedPreferences
+  } = useEventPlanning();
 
-  const [budgetData, setBudgetData] = useState(null);
+  const [formData, setFormData] = useState(contextBudgetData);
+  const [budgetData, setBudgetData] = useState(calculatedBudget);
   const [isCalculating, setIsCalculating] = useState(false);
   const [scenarios, setScenarios] = useState([]);
   const [activeScenario, setActiveScenario] = useState(0);
   const [showComparison, setShowComparison] = useState(false);
+
+  // Sync form data with context on mount and when context changes
+  useEffect(() => {
+    setFormData(contextBudgetData);
+  }, [contextBudgetData]);
+
+  // Sync calculated budget with context
+  useEffect(() => {
+    if (calculatedBudget) {
+      setBudgetData(calculatedBudget);
+    }
+  }, [calculatedBudget]);
 
   const {
     notifications,
@@ -39,69 +49,7 @@ const BudgetCalculator = () => {
     showLoading
   } = useNotifications();
 
-  useEffect(() => {
-    loadPreferences();
-  }, []);
-
-  const loadPreferences = async () => {
-    try {
-      const preferences = await preferencesService.getLatestPreferences();
-      if (preferences) {
-        // Map event type from dashboard format to budget format
-        const budgetEventType = mapEventTypeToBudget(preferences.event_type || preferences.eventType);
-        
-        setFormData(prev => ({
-          ...prev,
-          city: preferences.city || prev.city,
-          audienceSize: preferences.number_of_people || preferences.numberOfPeople || prev.audienceSize,
-          eventType: budgetEventType || prev.eventType,
-          venueType: preferences.venue ? mapVenueToType(preferences.venue) : prev.venueType,
-        }));
-        
-        console.log('✅ Budget calculator auto-loaded preferences:', {
-          city: preferences.city,
-          venue: preferences.venue,
-          eventType: budgetEventType,
-          audienceSize: preferences.number_of_people || preferences.numberOfPeople
-        });
-        
-        showInfo('Event preferences loaded from dashboard');
-      }
-    } catch (error) {
-      console.error('Error loading preferences:', error);
-    }
-  };
-
-  const mapVenueToType = (venue) => {
-    const venueMapping = {
-      'taj-palace-delhi': 'outdoor-venue',
-      'leela-mumbai': 'hotel-ballroom',
-      'itc-maurya-delhi': 'conference-center',
-      'oberoi-bangalore': 'rooftop-venue',
-      'trident-hyderabad': 'outdoor-venue',
-      'lalit-ashok-bangalore': 'conference-center',
-      'jw-marriott-pune': 'hotel-ballroom',
-      'radisson-blu-chennai': 'banquet-hall'
-    };
-    return venueMapping[venue] || '';
-  };
-
-  const mapEventTypeToBudget = (dashboardEventType) => {
-    // Map dashboard event types to budget calculator event types
-    const eventTypeMapping = {
-      'Corporate Conference': 'corporate',
-      'Wedding Celebration': 'wedding',
-      'Birthday Party': 'birthday',
-      'Product Launch': 'product-launch',
-      'Academic Seminar': 'academic',
-      'Networking Event': 'networking',
-      'Charity Fundraiser': 'fundraiser',
-      'Music Concert': 'corporate',
-      'Art Exhibition': 'corporate',
-      'Sports Tournament': 'corporate'
-    };
-    return eventTypeMapping[dashboardEventType] || dashboardEventType?.toLowerCase()?.replace(/\s+/g, '-') || '';
-  };
+  // Note: preferences loading is now handled by EventPlanningContext
 
   // Auto-calculate when form data changes
   useEffect(() => {
@@ -134,6 +82,10 @@ const BudgetCalculator = () => {
 
   const handleFormChange = (newFormData) => {
     setFormData(newFormData);
+    // Update shared context with new budget data
+    updateBudgetData(newFormData);
+    // Save preferences automatically
+    saveSharedPreferences();
   };
 
   const handleTemplateSelect = (templateData) => {
@@ -412,7 +364,7 @@ const BudgetCalculator = () => {
       <NotificationToast
         notifications={notifications}
         onDismiss={dismissNotification}
-        position="top-right"
+        position="below-header"
       />
     </div>
   );
