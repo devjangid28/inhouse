@@ -5,7 +5,7 @@ const ai = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 class GeminiService {
   async generateEventPlan(eventDescription, eventType, preferences = {}) {
     try {
-      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       const prompt = `You are an expert event planner. Based on the following event details, create a comprehensive event plan. IMPORTANT: Respond ONLY in English language. Do NOT use Hindi, mixed languages, or any non-English content.
 
@@ -61,7 +61,7 @@ Provide ONLY the JSON response, no additional text.`;
 
   async generatePosterContent(eventDescription, eventType, style = 'modern') {
     try {
-      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       const prompt = `You are a creative designer. Based on the following event details, create poster content suggestions. IMPORTANT: Respond ONLY in English language. Do NOT use Hindi, mixed languages, or any non-English content.
 
@@ -99,7 +99,7 @@ Provide ONLY the JSON response, no additional text.`;
 
   async generateEmailInvitation(eventDescription, eventType, tone = 'formal') {
     try {
-      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
 
       const prompt = `You are a professional email writer. Create an event invitation email based on these details. IMPORTANT: Respond ONLY in English language. Do NOT use Hindi, mixed languages, or any non-English content.
 
@@ -137,7 +137,7 @@ Provide ONLY the JSON response, no additional text.`;
 
   async generateSocialMediaCaption(eventDescription, eventType, platform = 'instagram') {
     try {
-      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       const characterLimits = {
         instagram: 2200,
@@ -183,7 +183,7 @@ Provide ONLY the JSON response, no additional text.`;
 
   async generateMarketingContent(eventDescription, eventType) {
     try {
-      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       const prompt = `You are a marketing expert. Create comprehensive marketing content for this event. IMPORTANT: Respond ONLY in English language. Do NOT use Hindi, mixed languages, or any non-English content.
 
