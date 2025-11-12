@@ -6,6 +6,8 @@ import NotificationToast, { useNotifications } from '../../components/ui/Notific
 import BudgetInputForm from './components/BudgetInputForm';
 import BudgetBreakdown from './components/BudgetBreakdown';
 import BudgetComparison from './components/BudgetComparison';
+import BudgetCharts from './components/BudgetCharts';
+import CustomExpenseModal from './CustomExpenseModal';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import { preferencesService } from '../../services/preferencesService';
@@ -27,6 +29,8 @@ const BudgetCalculator = () => {
   const [scenarios, setScenarios] = useState([]);
   const [activeScenario, setActiveScenario] = useState(0);
   const [showComparison, setShowComparison] = useState(false);
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [customExpenses, setCustomExpenses] = useState([]);
 
   // Sync form data with context on mount and when context changes
   useEffect(() => {
@@ -245,8 +249,7 @@ const BudgetCalculator = () => {
   const handleQuickAction = (action) => {
     switch (action) {
       case 'add-expense':
-        // Add custom expense functionality
-        showInfo('Custom expense feature coming soon!');
+        setIsExpenseModalOpen(true);
         break;
       case 'export-budget':
         handleExportBudget();
@@ -296,13 +299,23 @@ const BudgetCalculator = () => {
             {/* Right Column - Budget Breakdown */}
             <div className="space-y-6">
               {isFormValid ? (
-                <BudgetBreakdown
-                  formData={formData}
-                  budgetData={budgetData}
-                  onExport={handleExportBudget}
-                  onSave={handleSaveBudget}
-                  isCalculating={isCalculating}
-                />
+                <>
+                  <BudgetBreakdown
+                    formData={formData}
+                    budgetData={budgetData}
+                    onExport={handleExportBudget}
+                    onSave={handleSaveBudget}
+                    isCalculating={isCalculating}
+                  />
+                  
+                  {/* Budget Charts */}
+                  {budgetData && budgetData.grandTotal > 0 && (
+                    <BudgetCharts
+                      budgetData={budgetData}
+                      formData={formData}
+                    />
+                  )}
+                </>
               ) : (
                 <div className="bg-card rounded-lg border border-border shadow-card p-8">
                   <div className="text-center">
@@ -365,6 +378,16 @@ const BudgetCalculator = () => {
         notifications={notifications}
         onDismiss={dismissNotification}
         position="below-header"
+      />
+
+      {/* Custom Expense Modal */}
+      <CustomExpenseModal
+        isOpen={isExpenseModalOpen}
+        onClose={() => setIsExpenseModalOpen(false)}
+        onAdd={(expense) => {
+          setCustomExpenses(prev => [...prev, expense]);
+          showSuccess(`Custom expense "${expense.name}" added successfully!`);
+        }}
       />
     </div>
   );

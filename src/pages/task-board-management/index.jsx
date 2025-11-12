@@ -5,6 +5,7 @@ import NotificationToast, { useNotifications } from '../../components/ui/Notific
 import TaskColumn from './components/TaskColumn';
 import TaskFilters from './components/TaskFilters';
 import TaskModal from './components/TaskModal';
+import TeamAssignmentModal from './components/TeamAssignmentModal';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 
@@ -25,6 +26,7 @@ const TaskBoardManagement = () => {
   });
   const [dragOverColumn, setDragOverColumn] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [taskStats, setTaskStats] = useState({});
   const [isMobileView, setIsMobileView] = useState(false);
@@ -344,7 +346,8 @@ const TaskBoardManagement = () => {
         setEditingTask(null);
         setIsTaskModalOpen(true);
         break;
-      case 'assign-team': showWarning('Team assignment feature coming soon');
+      case 'assign-team':
+        setIsTeamModalOpen(true);
         break;
       default:
         showWarning('Action not implemented yet');
@@ -515,6 +518,24 @@ const TaskBoardManagement = () => {
         notifications={notifications}
         onDismiss={dismissNotification}
         position="below-header"
+      />
+
+      {/* Team Assignment Modal */}
+      <TeamAssignmentModal
+        isOpen={isTeamModalOpen}
+        onClose={() => setIsTeamModalOpen(false)}
+        task={editingTask}
+        onAssign={(members) => {
+          if (editingTask) {
+            const updatedTasks = tasks.map(task =>
+              task.id === editingTask.id
+                ? { ...task, assignee: members[0] || task.assignee }
+                : task
+            );
+            setTasks(updatedTasks);
+            showSuccess(`Team assigned to "${editingTask.title}" successfully!`);
+          }
+        }}
       />
     </div>
   );

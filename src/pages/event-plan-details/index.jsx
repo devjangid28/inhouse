@@ -6,6 +6,8 @@ import EventMetadata from './components/EventMetadata';
 import EventTimeline from './components/EventTimeline';
 import PlanActions from './components/PlanActions';
 import ProgressTracker from './components/ProgressTracker';
+import GanttChart from './components/GanttChart';
+import CalendarView from './components/CalendarView';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import { eventPreferencesService } from '../../services/eventPreferencesService';
@@ -115,121 +117,148 @@ const EventPlanDetails = () => {
           mockTimelineData = aiGeneratedPlan.timeline.map((item, index) => ({
             id: `tl_${index + 1}`,
             title: item.activity || item.title || 'Activity',
+            activity: item.activity || item.title || 'Activity', // For Gantt/Calendar
             type: 'presentation',
             startTime: item.time || '09:00',
+            time: item.time || '09:00', // For Gantt/Calendar
             duration: parseInt(item.duration) || 60,
             location: item.location || 'Main Hall',
             attendees: item.attendees || 50,
             description: item.description || item.activity || '',
             resources: item.resources || [],
             assignedTo: item.assignedTo || [],
-            notes: item.notes || ''
+            notes: item.notes || '',
+            status: 'upcoming' // Add default status for Gantt/Calendar
           }));
         } else {
           mockTimelineData = [
             {
               id: 'tl_001',
               title: 'Venue Setup & Registration',
+              activity: 'Venue Setup & Registration',
               type: 'setup',
               startTime: '07:00',
+              time: '07:00',
               duration: 120,
               location: 'Main Hall',
               attendees: 10,
               description: 'Complete venue setup including registration desks, signage, and technical equipment testing.',
               resources: ['Registration desks', 'Welcome banners', 'Audio/Visual equipment', 'Name badges', 'Welcome packets'],
               assignedTo: ['Setup Team', 'Registration Staff'],
-              notes: 'Ensure all technical equipment is tested 30 minutes before event start.'
+              notes: 'Ensure all technical equipment is tested 30 minutes before event start.',
+              status: 'completed'
             },
           {
             id: 'tl_002',
             title: 'Opening Keynote',
+            activity: 'Opening Keynote',
             type: 'presentation',
             startTime: '09:00',
+            time: '09:00',
             duration: 60,
             location: 'Main Auditorium',
             attendees: 500,
             description: 'Welcome address and opening keynote presentation by industry leader.',
             resources: ['Main stage setup', 'Wireless microphone', 'Presentation screen', 'Lighting system'],
             assignedTo: ['AV Team', 'Stage Manager'],
-            notes: 'Speaker needs wireless lapel mic and clicker for slides.'
+            notes: 'Speaker needs wireless lapel mic and clicker for slides.',
+            status: 'in-progress'
           },
           {
             id: 'tl_003',
             title: 'Networking Coffee Break',
+            activity: 'Networking Coffee Break',
             type: 'break',
             startTime: '10:00',
+            time: '10:00',
             duration: 30,
             location: 'Exhibition Hall',
             attendees: 500,
             description: 'Coffee, tea, and light refreshments with networking opportunities.',
             resources: ['Coffee stations', 'Pastries', 'High-top tables', 'Networking materials'],
             assignedTo: ['Catering Team', 'Event Staff'],
-            notes: 'Ensure dietary restrictions are accommodated with alternative options.'
+            notes: 'Ensure dietary restrictions are accommodated with alternative options.',
+            status: 'upcoming'
           },
           {
             id: 'tl_004',
             title: 'Technical Workshops',
+            activity: 'Technical Workshops',
             type: 'presentation',
             startTime: '10:30',
+            time: '10:30',
             duration: 90,
             location: 'Breakout Rooms A, B, C',
             attendees: 150,
             description: 'Parallel technical workshops on AI, Cloud Computing, and Cybersecurity.',
             resources: ['Laptops for hands-on sessions', 'Workshop materials', 'Whiteboards', 'Projectors'],
             assignedTo: ['Workshop Facilitators', 'Technical Support'],
-            notes: 'Each room needs dedicated technical support staff.'
+            notes: 'Each room needs dedicated technical support staff.',
+            status: 'upcoming'
           },
           {
             id: 'tl_005',
             title: 'Lunch & Exhibition',
+            activity: 'Lunch & Exhibition',
             type: 'meal',
             startTime: '12:00',
+            time: '12:00',
             duration: 60,
             location: 'Exhibition Hall',
             attendees: 500,
             description: 'Buffet lunch with sponsor exhibition booths and product demonstrations.',
             resources: ['Buffet stations', 'Exhibition booths', 'Demo equipment', 'Seating areas'],
             assignedTo: ['Catering Team', 'Exhibition Coordinators'],
-            notes: 'Coordinate with sponsors for booth setup and demo schedules.'
+            notes: 'Coordinate with sponsors for booth setup and demo schedules.',
+            status: 'upcoming'
           },
           {
             id: 'tl_006',
             title: 'Panel Discussion',
+            activity: 'Panel Discussion',
             type: 'presentation',
             startTime: '13:00',
+            time: '13:00',
             duration: 75,
             location: 'Main Auditorium',
             attendees: 500,
             description: 'Industry expert panel on future technology trends and innovations.',
             resources: ['Panel table setup', 'Multiple microphones', 'Moderator materials'],
             assignedTo: ['Moderator', 'AV Team'],
-            notes: 'Prepare backup questions for moderator in case of time gaps.'
+            notes: 'Prepare backup questions for moderator in case of time gaps.',
+            status: 'upcoming'
           },
           {
             id: 'tl_007',
             title: 'Closing Ceremony & Awards',
+            activity: 'Closing Ceremony & Awards',
             type: 'presentation',
             startTime: '14:15',
+            time: '14:15',
             duration: 45,
             location: 'Main Auditorium',
             attendees: 500,
             description: 'Award presentations, closing remarks, and next year announcements.',
             resources: ['Award trophies', 'Presentation materials', 'Photography equipment'],
             assignedTo: ['Event Manager', 'Photography Team'],
-            notes: 'Ensure all award recipients are present and prepared.'
+            notes: 'Ensure all award recipients are present and prepared.',
+            status: 'upcoming'
           },
           {
             id: 'tl_008',
             title: 'Venue Cleanup',
+            activity: 'Venue Cleanup',
             type: 'cleanup',
             startTime: '15:00',
+            time: '15:00',
             duration: 120,
             location: 'All Areas',
             attendees: 15,
             description: 'Complete venue cleanup, equipment breakdown, and material collection.',
             resources: ['Cleaning supplies', 'Storage containers', 'Transportation'],
             assignedTo: ['Cleanup Crew', 'Equipment Team'],
-            notes: 'Coordinate with venue management for final inspection.'
+            notes: 'Coordinate with venue management for final inspection.',
+            status: 'upcoming'
           }];
         }
 
@@ -596,39 +625,18 @@ const EventPlanDetails = () => {
               )}
               
               {viewMode === 'gantt' && (
-                <div className="bg-card rounded-lg border border-border p-8 shadow-card text-center">
-                  <Icon name="BarChart3" size={48} className="text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Gantt Chart View</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Advanced project timeline visualization coming soon
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => setViewMode('timeline')}
-                    iconName="ArrowLeft"
-                    iconPosition="left"
-                  >
-                    Back to Timeline
-                  </Button>
-                </div>
+                <GanttChart
+                  timelineData={timelineData}
+                  onActivityClick={(activity) => showInfo(`Selected: ${activity.activity}`)}
+                />
               )}
               
               {viewMode === 'calendar' && (
-                <div className="bg-card rounded-lg border border-border p-8 shadow-card text-center">
-                  <Icon name="Calendar" size={48} className="text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Calendar View</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Calendar integration and scheduling view coming soon
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => setViewMode('timeline')}
-                    iconName="ArrowLeft"
-                    iconPosition="left"
-                  >
-                    Back to Timeline
-                  </Button>
-                </div>
+                <CalendarView
+                  timelineData={timelineData}
+                  eventDate={eventData?.date ? new Date(eventData.date) : new Date()}
+                  onActivityClick={(activity) => showInfo(`Selected: ${activity.activity}`)}
+                />
               )}
             </div>
 
