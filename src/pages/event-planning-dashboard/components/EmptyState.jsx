@@ -109,12 +109,6 @@ const EmptyState = ({ onGetStarted }) => {
           </div>
         </div>
       </div>
-      {/* Academic Badge */}
-      <div className="mt-8 pt-6 border-t border-border">
-        <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
-          <Icon name="GraduationCap" size={14} />
-        </div>
-      </div>
     </div>
   );
 };
