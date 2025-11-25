@@ -43,18 +43,18 @@ const BudgetBreakdown = ({
       };
     }
 
-    // Base pricing multipliers by city
+    // Base pricing multipliers by city (Indian cities)
     const cityMultipliers = {
-      'new-york': 1.5,
-      'los-angeles': 1.4,
-      'san-diego': 1.3,
-      'chicago': 1.1,
-      'philadelphia': 1.1,
-      'houston': 0.9,
-      'dallas': 0.9,
-      'phoenix': 0.8,
-      'san-antonio': 0.8,
-      'austin': 1.0
+      mumbai: 1.4,
+      delhi: 1.3,
+      bangalore: 1.2,
+      hyderabad: 1.0,
+      ahmedabad: 0.9,
+      chennai: 1.1,
+      kolkata: 0.8,
+      pune: 1.1,
+      jaipur: 0.9,
+      lucknow: 0.7
     };
 
     // Base venue costs

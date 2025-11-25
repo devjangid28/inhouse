@@ -4,8 +4,8 @@ import Button from '../../../components/ui/Button';
 import { validateEventDescription, sanitizeInput } from '../../../utils/validation';
 
 
-const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType }) => {
-  const [prompt, setPrompt] = useState('');
+const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType, eventDescription = '', selectedFunctions = [], attendeeCount = 50 }) => {
+  const [prompt, setPrompt] = useState(eventDescription || '');
   const [eventType, setEventType] = useState(defaultEventType || '');
   const [errors, setErrors] = useState({});
   const [isValidating, setIsValidating] = useState(false);
@@ -16,9 +16,16 @@ const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType }) => {
     }
   }, [defaultEventType]);
 
+  React.useEffect(() => {
+    if (eventDescription && eventDescription !== prompt) {
+      setPrompt(eventDescription);
+    }
+  }, [eventDescription]);
+
   const eventTypes = [
     'Corporate Conference',
     'Wedding Celebration',
+    'Hindu Wedding Functions',
     'Birthday Party',
     'Product Launch',
     'Academic Seminar',
@@ -95,7 +102,12 @@ const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType }) => {
     'Wedding Celebration': [
       "Organize a sustainable wedding celebration for 150 guests with outdoor ceremony and eco-friendly catering",
       "Plan a beach wedding for 100 guests with cocktail hour, dinner reception, and live band entertainment",
-      "Create a traditional Indian wedding with mehendi, sangeet, and reception ceremonies for 300 guests"
+      "Create a destination wedding for 200 guests with welcome party, ceremony, and grand reception"
+    ],
+    'Hindu Wedding Functions': [
+      "Plan traditional Hindu wedding with mehendi, sangeet, haldi, phera, and reception ceremonies for 300 guests with authentic rituals, cultural performances, email invitations, and social media campaigns",
+      "Organize elaborate Hindu wedding functions including engagement, tilak, mehendi, sangeet, haldi, wedding ceremony, reception, and griha pravesh for 500 guests spanning multiple days with digital marketing and visual assets",
+      "Create comprehensive Hindu wedding celebration with all traditional ceremonies: engagement, tilak, jaggo, mehendi, sangeet, haldi, phera, reception, vidai, and griha pravesh for 400 guests with luxury arrangements, email campaigns, and social media content"
     ],
     'Birthday Party': [
       "Plan a milestone 50th birthday celebration for 80 guests with themed decorations and live entertainment",
@@ -140,6 +152,42 @@ const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType }) => {
   };
 
   const getExamplePrompts = () => {
+    console.log('🔍 EventPromptForm - eventType:', eventType);
+    console.log('🔍 EventPromptForm - selectedFunctions:', selectedFunctions);
+    
+    // If Hindu Wedding Functions are selected, generate examples based on ALL selected functions
+    if ((eventType === 'Wedding Celebration' || eventType === 'Hindu Wedding Functions') && selectedFunctions.length > 0) {
+      const functionNames = selectedFunctions.map(func => {
+        const functionMap = {
+          'Haldi': 'haldi ceremony',
+          'Mehandi': 'mehendi ceremony', 
+          'Sangeet': 'sangeet night',
+          'Engagement': 'engagement ceremony',
+          'Phera': 'phera ceremony',
+          'Wedding Night': 'wedding ceremony',
+          'Reception': 'reception party',
+          'DJ Night': 'DJ night',
+          'Vidai': 'vidai ceremony',
+          'Griha Pravesh': 'griha pravesh',
+          'Tilak': 'tilak ceremony',
+          'Jaggo': 'jaggo ceremony'
+        };
+        return functionMap[func] || func.toLowerCase();
+      });
+      
+      const allFunctions = functionNames.join(', ');
+      const guestCount = attendeeCount || (selectedFunctions.length <= 4 ? 250 : selectedFunctions.length <= 8 ? 400 : 500);
+      const days = selectedFunctions.length <= 3 ? '2-3 days' : selectedFunctions.length <= 6 ? '4-5 days' : '6-7 days';
+      
+      const examples = [
+        `Plan a grand Hindu wedding celebration for ${guestCount} guests featuring all selected ceremonies: ${allFunctions}. Include traditional decorations, authentic catering, cultural performances, luxury accommodations, email invitations, social media campaigns, and visual assets spanning ${days}`,
+        `Organize a complete Hindu wedding with ${allFunctions} for ${guestCount} guests. Arrange traditional rituals, premium venues, elaborate decorations, multi-cuisine catering, live entertainment, guest accommodations, digital invitations, social media content, and promotional materials over ${days}`,
+        `Create an authentic Hindu wedding celebration including ${allFunctions} for ${guestCount} guests. Plan traditional ceremonies, luxury venues, cultural decorations, premium catering, professional photography, comprehensive guest services, email marketing, social media promotion, and custom visual assets across ${days}`
+      ];
+      console.log('✅ Generated Hindu wedding examples:', examples);
+      return examples;
+    }
+    
     if (eventType && examplePromptsByType[eventType]) {
       return examplePromptsByType[eventType];
     }

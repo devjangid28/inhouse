@@ -11,7 +11,7 @@ import { supabase } from '../../../lib/supabaseClient';
 const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => {
   const [selectedTone, setSelectedTone] = useState('formal');
   const [selectedTemplate, setSelectedTemplate] = useState('corporate');
-  const eventDescription = sharedDescription ?? '';
+  const [eventDescription, setEventDescription] = useState(sharedDescription || '');
   const [recipientEmail, setRecipientEmail] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -20,6 +20,23 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
   const [sendResult, setSendResult] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [editableContent, setEditableContent] = useState(null);
+
+  // Load shared event description from localStorage
+  React.useEffect(() => {
+    const storedDescription = localStorage.getItem('shared_event_description');
+    if (storedDescription && storedDescription !== eventDescription) {
+      setEventDescription(storedDescription);
+      if (onDescriptionChange) {
+        onDescriptionChange(storedDescription);
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (sharedDescription && sharedDescription !== eventDescription) {
+      setEventDescription(sharedDescription);
+    }
+  }, [sharedDescription]);
 
   const toneOptions = [
     { value: 'formal', label: 'Formal' },
@@ -32,6 +49,7 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
     { value: 'corporate', label: 'Corporate Event' },
     { value: 'Birthday Party', label: 'Birthday Party' },
     { value: 'wedding', label: 'Wedding Celebration' },
+    { value: 'hindu-wedding', label: 'Hindu Wedding Functions' },
     { value: 'conference', label: 'Conference/Seminar' },
     { value: 'networking', label: 'Networking Event' }
   ];
@@ -161,9 +179,10 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
             <textarea
               value={eventDescription}
               onChange={(e) => {
+                setEventDescription(e.target.value);
                 onDescriptionChange?.(e.target.value);
               }}
-              placeholder="Describe your event in detail... Include event name, date, venue, key highlights, and any special instructions."
+              placeholder="Describe your event in detail... Include event name, date, venue, key highlights, and any special instructions. For Hindu weddings, mention specific ceremonies like Haldi, Mehendi, Sangeet, Phera, Reception, etc. This will auto-populate from your Event Preferences if you've selected Hindu wedding functions."
               rows={6}
               className="w-full px-4 py-3 border rounded-md bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[150px] border-border"
               style={{ lineHeight: '1.6' }}

@@ -12,17 +12,30 @@ const BudgetInputForm = ({
   isCalculating = false 
 }) => {
 
+  const cityBudgetMultipliers = {
+    mumbai: 1.4,
+    delhi: 1.3,
+    bangalore: 1.2,
+    hyderabad: 1.0,
+    ahmedabad: 0.9,
+    chennai: 1.1,
+    kolkata: 0.8,
+    pune: 1.1,
+    jaipur: 0.9,
+    lucknow: 0.7
+  };
+
   const cityOptions = [
-    { value: 'mumbai', label: 'Mumbai, Maharashtra', description: 'High cost metropolitan area' },
-    { value: 'delhi', label: 'Delhi, NCR', description: 'Premium capital city pricing' },
-    { value: 'bangalore', label: 'Bangalore, Karnataka', description: 'Tech hub premium pricing' },
-    { value: 'hyderabad', label: 'Hyderabad, Telangana', description: 'Moderate metropolitan pricing' },
-    { value: 'ahmedabad', label: 'Ahmedabad, Gujarat', description: 'Competitive Western India rates' },
-    { value: 'chennai', label: 'Chennai, Tamil Nadu', description: 'Moderate Southern pricing' },
-    { value: 'kolkata', label: 'Kolkata, West Bengal', description: 'Affordable Eastern India rates' },
-    { value: 'pune', label: 'Pune, Maharashtra', description: 'Growing market pricing' },
-    { value: 'jaipur', label: 'Jaipur, Rajasthan', description: 'Heritage city competitive rates' },
-    { value: 'lucknow', label: 'Lucknow, Uttar Pradesh', description: 'Budget-friendly options' }
+    { value: 'mumbai', label: 'Mumbai, Maharashtra', description: `High cost metropolitan area (${cityBudgetMultipliers.mumbai}x base rate)` },
+    { value: 'delhi', label: 'Delhi, NCR', description: `Premium capital city pricing (${cityBudgetMultipliers.delhi}x base rate)` },
+    { value: 'bangalore', label: 'Bangalore, Karnataka', description: `Tech hub premium pricing (${cityBudgetMultipliers.bangalore}x base rate)` },
+    { value: 'hyderabad', label: 'Hyderabad, Telangana', description: `Moderate metropolitan pricing (${cityBudgetMultipliers.hyderabad}x base rate)` },
+    { value: 'ahmedabad', label: 'Ahmedabad, Gujarat', description: `Competitive Western India rates (${cityBudgetMultipliers.ahmedabad}x base rate)` },
+    { value: 'chennai', label: 'Chennai, Tamil Nadu', description: `Moderate Southern pricing (${cityBudgetMultipliers.chennai}x base rate)` },
+    { value: 'kolkata', label: 'Kolkata, West Bengal', description: `Affordable Eastern India rates (${cityBudgetMultipliers.kolkata}x base rate)` },
+    { value: 'pune', label: 'Pune, Maharashtra', description: `Growing market pricing (${cityBudgetMultipliers.pune}x base rate)` },
+    { value: 'jaipur', label: 'Jaipur, Rajasthan', description: `Heritage city competitive rates (${cityBudgetMultipliers.jaipur}x base rate)` },
+    { value: 'lucknow', label: 'Lucknow, Uttar Pradesh', description: `Budget-friendly options (${cityBudgetMultipliers.lucknow}x base rate)` }
   ];
 
   const eventTypeOptions = [
@@ -171,15 +184,27 @@ const BudgetInputForm = ({
               <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
             </div>
 
-            <Select
-              label="Event City"
-              description="Location affects pricing and vendor availability"
-              options={cityOptions}
-              value={formData?.city}
-              onChange={(value) => handleInputChange('city', value)}
-              searchable
-              required
-            />
+            <div>
+              <Select
+                label="Event City"
+                description="Location affects pricing and vendor availability"
+                options={cityOptions}
+                value={formData?.city}
+                onChange={(value) => handleInputChange('city', value)}
+                searchable
+                required
+              />
+              {formData?.city && cityBudgetMultipliers[formData.city] && (
+                <div className="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-800">
+                    <Icon name="Info" size={14} className="inline mr-1" />
+                    <strong>City Pricing:</strong> {cityBudgetMultipliers[formData.city]}x base rate
+                    {cityBudgetMultipliers[formData.city] > 1.2 ? ' (Premium city)' : 
+                     cityBudgetMultipliers[formData.city] < 0.9 ? ' (Budget-friendly)' : ' (Standard pricing)'}
+                  </p>
+                </div>
+              )}
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
@@ -241,11 +266,23 @@ const BudgetInputForm = ({
               label="Event Duration (hours)"
               type="number"
               min="1"
-              max="24"
+              max="12"
               value={formData?.duration}
-              onChange={(e) => handleInputChange('duration', parseInt(e?.target?.value))}
-              placeholder="Enter duration in hours"
-              description="Total event duration"
+              onChange={(e) => {
+                const value = parseInt(e?.target?.value);
+                if (value <= 12) {
+                  handleInputChange('duration', value);
+                }
+              }}
+              onInput={(e) => {
+                const value = parseInt(e?.target?.value);
+                if (value > 12) {
+                  e.target.value = 12;
+                  handleInputChange('duration', 12);
+                }
+              }}
+              placeholder="Enter duration in hours (max 12)"
+              description="Total event duration (maximum 12 hours)"
             />
           </div>
 

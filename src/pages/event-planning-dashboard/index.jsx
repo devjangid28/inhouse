@@ -34,6 +34,7 @@ const EventPlanningDashboard = () => {
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedEventType, setSelectedEventType] = useState(dashboardData.eventType || '');
+  const [eventDescription, setEventDescription] = useState('');
 
   // Mock generated content data
   const mockGeneratedContent = [
@@ -379,7 +380,17 @@ const EventPlanningDashboard = () => {
   };
 
   const handlePreferencesSave = async (savedData) => {
-    updateDashboardData(savedData);
+    updateDashboardData({
+      ...savedData,
+      selectedFunctions: savedData.selectedFunctions || [],
+      audienceSize: savedData.numberOfPeople || savedData.audienceSize,
+      numberOfPeople: savedData.numberOfPeople || savedData.audienceSize
+    });
+    if (savedData?.eventDescription) {
+      setEventDescription(savedData.eventDescription);
+      // Store event description for marketing materials
+      localStorage.setItem('shared_event_description', savedData.eventDescription);
+    }
     await saveSharedPreferences();
     showSuccess('Event preferences saved successfully!');
   };
@@ -392,6 +403,18 @@ const EventPlanningDashboard = () => {
     }
     if (loadedData?.city) {
       updateDashboardData({ city: loadedData.city });
+    }
+    if (loadedData?.eventDescription) {
+      setEventDescription(loadedData.eventDescription);
+    }
+    if (loadedData?.selectedFunctions) {
+      updateDashboardData({ selectedFunctions: loadedData.selectedFunctions });
+    }
+    if (loadedData?.numberOfPeople) {
+      updateDashboardData({ 
+        audienceSize: loadedData.numberOfPeople,
+        numberOfPeople: loadedData.numberOfPeople 
+      });
     }
   };
 
@@ -473,6 +496,9 @@ const EventPlanningDashboard = () => {
                     onGenerate={handleGenerateEvent}
                     isGenerating={isGenerating}
                     defaultEventType={selectedEventType}
+                    eventDescription={eventDescription}
+                    selectedFunctions={dashboardData.selectedFunctions || []}
+                    attendeeCount={dashboardData.audienceSize || dashboardData.numberOfPeople}
                   />
                 </div>
               </div>

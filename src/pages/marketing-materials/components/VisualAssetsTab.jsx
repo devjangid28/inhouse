@@ -221,7 +221,7 @@ const VisualAssetsTab = ({ sharedDescription = '' }) => {
             Description / Prompt
           </label>
           <textarea
-            placeholder="Describe the visual you want to generate in detail. For wedding invitations, include couple names for personalization. Example: 'Elegant Indian wedding invitation for Rahul & Priya with floral background and gold accents'"
+            placeholder="Describe the visual you want to generate in detail. For Hindu wedding functions, include couple names and specific ceremonies. Example: 'Elegant Hindu wedding invitation for Rahul & Priya featuring Haldi, Mehendi, Sangeet, Phera ceremonies with traditional floral background and gold accents'"
             value={customText}
             onChange={(e) => setCustomText(e.target.value)}
             rows={4}

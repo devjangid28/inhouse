@@ -27,6 +27,7 @@ export const EventPlanningProvider = ({ children }) => {
     audienceSize: 50,
     duration: 4,
     budget: 0,
+    selectedFunctions: [],
   });
 
   // Shared state for budget calculator
@@ -68,6 +69,7 @@ export const EventPlanningProvider = ({ children }) => {
           budget: preferences.budget || prev.budget,
           date: preferences.event_date || preferences.eventDate || prev.date,
           time: preferences.event_time || preferences.eventTime || prev.time,
+          selectedFunctions: preferences.selectedFunctions || prev.selectedFunctions,
         }));
 
         // Update budget calculator data
@@ -198,6 +200,7 @@ export const EventPlanningProvider = ({ children }) => {
         budget: dashboardData.budget,
         eventDate: dashboardData.date,
         eventTime: dashboardData.time,
+        selectedFunctions: dashboardData.selectedFunctions,
       };
 
       await preferencesService.savePreferences(preferences);

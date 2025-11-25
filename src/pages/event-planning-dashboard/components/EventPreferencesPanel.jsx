@@ -17,6 +17,8 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
     eventDate: '',
     eventTime: '',
     eventType: '',
+    selectedFunctions: [],
+    eventDescription: ''
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -25,6 +27,7 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
   const eventTypeOptions = [
     { value: 'Corporate Conference', label: 'Corporate Conference' },
     { value: 'Wedding Celebration', label: 'Wedding Celebration' },
+    { value: 'Hindu Wedding Functions', label: 'Hindu Wedding Functions' },
     { value: 'Birthday Party', label: 'Birthday Party' },
     { value: 'Product Launch', label: 'Product Launch' },
     { value: 'Academic Seminar', label: 'Academic Seminar' },
@@ -34,6 +37,34 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
     { value: 'Art Exhibition', label: 'Art Exhibition' },
     { value: 'Sports Tournament', label: 'Sports Tournament' },
   ];
+
+  const hinduWeddingFunctions = [
+    { value: 'Haldi', label: 'Haldi Ceremony', description: 'Traditional turmeric ceremony for purification and blessings' },
+    { value: 'Mehandi', label: 'Mehandi Ceremony', description: 'Intricate henna designs with music and celebration' },
+    { value: 'Sangeet', label: 'Sangeet Night', description: 'Musical evening with dance performances and entertainment' },
+    { value: 'Engagement', label: 'Engagement Ceremony', description: 'Ring exchange ceremony with family blessings' },
+    { value: 'Phera', label: 'Phera Ceremony', description: 'Sacred wedding vows around the holy fire' },
+    { value: 'Wedding Night', label: 'Wedding Night', description: 'Main wedding ceremony with traditional rituals' },
+    { value: 'Reception', label: 'Reception Party', description: 'Grand celebration dinner with guests and entertainment' },
+    { value: 'DJ Night', label: 'DJ Night', description: 'High-energy dance party with professional DJ and lighting' },
+    { value: 'Vidai', label: 'Vidai Ceremony', description: 'Emotional farewell ceremony for the bride' },
+    { value: 'Griha Pravesh', label: 'Griha Pravesh', description: 'First entry of bride into groom\'s home' },
+    { value: 'Tilak', label: 'Tilak Ceremony', description: 'Groom\'s family visits bride\'s home for blessings' },
+    { value: 'Jaggo', label: 'Jaggo Ceremony', description: 'Pre-wedding celebration with singing and dancing' }
+  ];
+
+  const cityBudgetMultipliers = {
+    mumbai: 1.4,
+    delhi: 1.3,
+    bangalore: 1.2,
+    hyderabad: 1.0,
+    ahmedabad: 0.9,
+    chennai: 1.1,
+    kolkata: 0.8,
+    pune: 1.1,
+    jaipur: 0.9,
+    lucknow: 0.7
+  };
 
   const cityOptions = [
     { value: 'mumbai', label: 'Mumbai, Maharashtra' },
@@ -75,6 +106,8 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
           eventDate: savedPreferences.eventDate || savedPreferences.event_date || '',
           eventTime: savedPreferences.eventTime || savedPreferences.event_time || '',
           eventType: savedPreferences.eventType || savedPreferences.event_type || '',
+          selectedFunctions: savedPreferences.selectedFunctions || [],
+          eventDescription: savedPreferences.eventDescription || ''
         };
         setPreferences(loadedPrefs);
         if (onLoad) onLoad(savedPreferences);
@@ -88,10 +121,30 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
   };
 
   const handleChange = (field, value) => {
-    setPreferences(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+    setPreferences(prev => {
+      const newPrefs = { ...prev, [field]: value };
+      
+      // Auto-adjust budget based on city
+      if (field === 'city' && value && cityBudgetMultipliers[value]) {
+        const baseBudget = 50000;
+        const adjustedBudget = Math.round(baseBudget * cityBudgetMultipliers[value]);
+        newPrefs.budget = adjustedBudget;
+      }
+      
+      // Generate event description for Hindu wedding functions
+      if (field === 'selectedFunctions') {
+        const descriptions = value.map(funcValue => {
+          const func = hinduWeddingFunctions.find(f => f.value === funcValue);
+          return func ? `${func.label}: ${func.description}` : '';
+        }).filter(Boolean);
+        
+        if (descriptions.length > 0) {
+          newPrefs.eventDescription = `Hindu Wedding Celebration\n\nSelected Functions:\n${descriptions.join('\n\n')}`;
+        }
+      }
+      
+      return newPrefs;
+    });
     setHasUnsavedChanges(true);
 
     if (field === 'eventType' && onEventTypeChange) {
@@ -158,6 +211,47 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
           placeholder="Select event type..."
         />
 
+        {(preferences.eventType === 'Wedding Celebration' || preferences.eventType === 'Hindu Wedding Functions') && (
+          <div className="md:col-span-2 lg:col-span-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Hindu Wedding Functions
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {hinduWeddingFunctions.map((func) => (
+                <label key={func.value} className="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={preferences.selectedFunctions?.includes(func.value)}
+                    onChange={(e) => {
+                      const newFunctions = e.target.checked
+                        ? [...(preferences.selectedFunctions || []), func.value]
+                        : (preferences.selectedFunctions || []).filter(f => f !== func.value);
+                      handleChange('selectedFunctions', newFunctions);
+                    }}
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <span className="text-sm font-medium">{func.label}</span>
+                </label>
+              ))}
+            </div>
+            {preferences.selectedFunctions?.length > 0 && (
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800 font-medium mb-2">Selected Functions Preview:</p>
+                <div className="space-y-1">
+                  {preferences.selectedFunctions.map(funcValue => {
+                    const func = hinduWeddingFunctions.find(f => f.value === funcValue);
+                    return func ? (
+                      <div key={funcValue} className="text-xs text-blue-700">
+                        <span className="font-medium">{func.label}:</span> {func.description}
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <Dropdown
           label="City / Location"
           value={preferences.city}
@@ -184,11 +278,18 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
           max={1000}
         />
 
-        <BudgetSlider
-          label="Budget"
-          value={preferences.budget}
-          onChange={(value) => handleChange('budget', value)}
-        />
+        <div>
+          <BudgetSlider
+            label={`Budget ${preferences.city ? `(${cityOptions.find(c => c.value === preferences.city)?.label} rates)` : ''}`}
+            value={preferences.budget}
+            onChange={(value) => handleChange('budget', value)}
+          />
+          {preferences.city && cityBudgetMultipliers[preferences.city] && (
+            <p className="text-xs text-gray-500 mt-1">
+              City multiplier: {cityBudgetMultipliers[preferences.city]}x base rate
+            </p>
+          )}
+        </div>
 
         <DatePicker
           label="Event Date"
@@ -256,6 +357,19 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
                 <p className="text-xs text-gray-500 mb-1">Budget</p>
                 <p className="text-sm font-medium text-gray-900">
                   ₹{(preferences.budget / 1000).toFixed(0)}K
+                  {preferences.city && cityBudgetMultipliers[preferences.city] && (
+                    <span className="text-xs text-blue-600 ml-1">
+                      ({cityBudgetMultipliers[preferences.city]}x)
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
+            {preferences.selectedFunctions?.length > 0 && (
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-xs text-gray-500 mb-1">Functions</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {preferences.selectedFunctions.length} selected
                 </p>
               </div>
             )}
