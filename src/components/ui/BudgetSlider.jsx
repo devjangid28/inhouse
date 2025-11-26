@@ -45,8 +45,13 @@ const BudgetSlider = ({ label, value, onChange, className }) => {
   const displayValue = value ? formatCurrency(value) : '';
 
   const getSliderBackground = () => {
-    const percentage = ((tempValue - 0) / (20000000 - 0)) * 100;
+    const percentage = ((tempValue - 0) / (50000000 - 0)) * 100;
     return `linear-gradient(to right, #2563eb 0%, #2563eb ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`;
+  };
+
+  const getSubtotal = () => {
+    // Calculate subtotal as 85% of selected budget (15% buffer for contingencies)
+    return Math.round(tempValue * 0.85);
   };
 
   return (
@@ -99,7 +104,7 @@ const BudgetSlider = ({ label, value, onChange, className }) => {
               <input
                 type="range"
                 min="0"
-                max="20000000"
+                max="50000000"
                 step="50000"
                 value={tempValue}
                 onChange={handleSliderChange}
@@ -111,7 +116,16 @@ const BudgetSlider = ({ label, value, onChange, className }) => {
 
               <div className="flex justify-between mt-2 text-xs text-gray-500">
                 <span>₹0</span>
-                <span>₹2 Cr</span>
+                <span>₹5 Cr</span>
+              </div>
+
+              {/* Subtotal Display */}
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-blue-800">Estimated Subtotal:</span>
+                  <span className="text-sm font-bold text-blue-900">{formatCurrency(getSubtotal())}</span>
+                </div>
+                <p className="text-xs text-blue-600 mt-1">85% of budget (15% buffer for contingencies)</p>
               </div>
             </div>
 

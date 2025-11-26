@@ -26,8 +26,7 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
 
   const eventTypeOptions = [
     { value: 'Corporate Conference', label: 'Corporate Conference' },
-    { value: 'Wedding Celebration', label: 'Wedding Celebration' },
-    { value: 'Hindu Wedding Functions', label: 'Hindu Wedding Functions' },
+    { value: 'Wedding', label: 'Wedding' },
     { value: 'Birthday Party', label: 'Birthday Party' },
     { value: 'Product Launch', label: 'Product Launch' },
     { value: 'Academic Seminar', label: 'Academic Seminar' },
@@ -98,6 +97,12 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
     try {
       const savedPreferences = await preferencesService.getLatestPreferences();
       if (savedPreferences) {
+        let eventType = savedPreferences.eventType || savedPreferences.event_type || '';
+        // Convert old event type values to new format
+        if (eventType === 'Wedding Celebration' || eventType === 'Hindu Wedding Functions') {
+          eventType = 'Wedding';
+        }
+        
         const loadedPrefs = {
           venue: savedPreferences.venue || '',
           city: savedPreferences.city || '',
@@ -105,7 +110,7 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
           budget: savedPreferences.budget || 50000,
           eventDate: savedPreferences.eventDate || savedPreferences.event_date || '',
           eventTime: savedPreferences.eventTime || savedPreferences.event_time || '',
-          eventType: savedPreferences.eventType || savedPreferences.event_type || '',
+          eventType: eventType,
           selectedFunctions: savedPreferences.selectedFunctions || [],
           eventDescription: savedPreferences.eventDescription || ''
         };
@@ -211,46 +216,7 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
           placeholder="Select event type..."
         />
 
-        {(preferences.eventType === 'Wedding Celebration' || preferences.eventType === 'Hindu Wedding Functions') && (
-          <div className="md:col-span-2 lg:col-span-3">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Hindu Wedding Functions
-            </label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {hinduWeddingFunctions.map((func) => (
-                <label key={func.value} className="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={preferences.selectedFunctions?.includes(func.value)}
-                    onChange={(e) => {
-                      const newFunctions = e.target.checked
-                        ? [...(preferences.selectedFunctions || []), func.value]
-                        : (preferences.selectedFunctions || []).filter(f => f !== func.value);
-                      handleChange('selectedFunctions', newFunctions);
-                    }}
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <span className="text-sm font-medium">{func.label}</span>
-                </label>
-              ))}
-            </div>
-            {preferences.selectedFunctions?.length > 0 && (
-              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-800 font-medium mb-2">Selected Functions Preview:</p>
-                <div className="space-y-1">
-                  {preferences.selectedFunctions.map(funcValue => {
-                    const func = hinduWeddingFunctions.find(f => f.value === funcValue);
-                    return func ? (
-                      <div key={funcValue} className="text-xs text-blue-700">
-                        <span className="font-medium">{func.label}:</span> {func.description}
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+
 
         <Dropdown
           label="City / Location"

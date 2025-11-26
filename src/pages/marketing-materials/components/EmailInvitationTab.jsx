@@ -21,15 +21,57 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
   const [showPreview, setShowPreview] = useState(false);
   const [editableContent, setEditableContent] = useState(null);
 
-  // Load shared event description from localStorage
+  // Load saved preferences and auto-populate
   React.useEffect(() => {
-    const storedDescription = localStorage.getItem('shared_event_description');
-    if (storedDescription && storedDescription !== eventDescription) {
-      setEventDescription(storedDescription);
-      if (onDescriptionChange) {
-        onDescriptionChange(storedDescription);
+    const loadPreferences = () => {
+      const savedPrefs = JSON.parse(localStorage.getItem('event_preferences_cache') || '{}');
+      const storedDescription = localStorage.getItem('shared_event_description');
+      
+      // Auto-generate description from saved preferences if available
+      if (savedPrefs && Object.keys(savedPrefs).length > 0 && !eventDescription) {
+        const { event_type, selectedFunctions, number_of_people, city, venue, budget, event_date, event_time } = savedPrefs;
+        
+        if (event_type === 'Wedding' && selectedFunctions && selectedFunctions.length > 0) {
+          const functionNames = selectedFunctions.map(func => {
+            const functionMap = {
+              'Haldi': 'haldi ceremony',
+              'Mehandi': 'mehendi ceremony', 
+              'Sangeet': 'sangeet night',
+              'Engagement': 'engagement ceremony',
+              'Phera': 'phera ceremony',
+              'Wedding Night': 'wedding ceremony',
+              'Reception': 'reception party',
+              'DJ Night': 'DJ night',
+              'Vidai': 'vidai ceremony',
+              'Griha Pravesh': 'griha pravesh',
+              'Tilak': 'tilak ceremony',
+              'Jaggo': 'jaggo ceremony'
+            };
+            return functionMap[func] || func.toLowerCase();
+          });
+          
+          const cityName = city ? city.charAt(0).toUpperCase() + city.slice(1) : 'Delhi';
+          const venueName = venue ? venue.split('-')[0] : 'luxury venue';
+          const budgetText = budget ? `₹${(budget / 100000).toFixed(1)} lakh` : '₹5-10 lakh';
+          const dateText = event_date ? new Date(event_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'November 2025';
+          const timeText = event_time ? new Date(`2000-01-01T${event_time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '9:00 AM';
+          
+          const autoDescription = `Plan a Hindu wedding ${functionNames.join(' and ')} for ${number_of_people || 300} guests in ${cityName} on ${dateText} at ${timeText}. Budget ${budgetText}, venue ${venueName}. Include traditional decorations, authentic catering, cultural performances, professional photography, email invitations, and social media campaigns.`;
+          
+          setEventDescription(autoDescription);
+          if (onDescriptionChange) {
+            onDescriptionChange(autoDescription);
+          }
+        }
+      } else if (storedDescription && storedDescription !== eventDescription) {
+        setEventDescription(storedDescription);
+        if (onDescriptionChange) {
+          onDescriptionChange(storedDescription);
+        }
       }
-    }
+    };
+    
+    loadPreferences();
   }, []);
 
   React.useEffect(() => {
@@ -49,9 +91,14 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
     { value: 'corporate', label: 'Corporate Event' },
     { value: 'Birthday Party', label: 'Birthday Party' },
     { value: 'wedding', label: 'Wedding Celebration' },
-    { value: 'hindu-wedding', label: 'Hindu Wedding Functions' },
     { value: 'conference', label: 'Conference/Seminar' },
     { value: 'networking', label: 'Networking Event' }
+  ];
+
+  const weddingExamples = [
+    "Plan a grand Hindu wedding celebration for 300 guests featuring haldi ceremony, mehendi night, sangeet evening, phera ceremony, and reception party. Include traditional decorations, authentic catering, cultural performances, professional photography, and guest accommodations.",
+    "Organize a traditional wedding with engagement ceremony, tilak ceremony, mehendi celebration, sangeet night, haldi ceremony, wedding ceremony, and reception for 250 guests. Arrange luxury venues, premium catering, live entertainment, and comprehensive guest services.",
+    "Create an authentic Hindu wedding including jaggo ceremony, mehendi function, sangeet night, haldi ceremony, phera ceremony, reception party, and griha pravesh for 400 guests. Plan traditional rituals, cultural decorations, multi-cuisine catering, and professional event management."
   ];
 
   const handleGenerate = async () => {
@@ -191,6 +238,29 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
               {eventDescription.length}/2000 characters
             </p>
           </div>
+
+          {/* Wedding Examples */}
+          {(selectedTemplate === 'wedding' || eventDescription.toLowerCase().includes('wedding')) && (
+            <div>
+              <p className="text-sm font-medium text-foreground mb-2">Need inspiration? Try these examples:</p>
+              <div className="space-y-2">
+                {weddingExamples.map((example, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => {
+                      setEventDescription(example);
+                      onDescriptionChange?.(example);
+                    }}
+                    className="w-full text-left p-3 bg-muted hover:bg-muted/80 rounded-md text-sm text-muted-foreground hover:text-foreground transition-smooth"
+                  >
+                    <Icon name="Lightbulb" size={14} className="inline mr-2" />
+                    {example}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select

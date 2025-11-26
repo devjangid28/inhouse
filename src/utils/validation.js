@@ -58,7 +58,7 @@ export const validateEventDescription = (description, eventType) => {
 const getRequiredKeywords = (eventType) => {
   const keywordMap = {
     'Corporate Conference': ['attendees', 'speakers', 'venue', 'agenda', 'networking', 'presentation'],
-    'Wedding Celebration': ['guests', 'ceremony', 'reception', 'venue', 'catering', 'music'],
+    'Wedding': ['guests', 'ceremony', 'reception', 'venue', 'catering', 'music'],
     'Birthday Party': ['guests', 'celebration', 'venue', 'entertainment', 'food', 'decorations'],
     'Product Launch': ['audience', 'product', 'demonstration', 'marketing', 'media', 'presentation'],
     'Academic Seminar': ['participants', 'speakers', 'topics', 'venue', 'research', 'discussion'],

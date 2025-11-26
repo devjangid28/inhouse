@@ -4,7 +4,7 @@ import Button from '../../../components/ui/Button';
 import { validateEventDescription, sanitizeInput } from '../../../utils/validation';
 
 
-const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType, eventDescription = '', selectedFunctions = [], attendeeCount = 50 }) => {
+const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType, eventDescription = '', selectedFunctions = [], attendeeCount = 50, onFunctionsChange }) => {
   const [prompt, setPrompt] = useState(eventDescription || '');
   const [eventType, setEventType] = useState(defaultEventType || '');
   const [errors, setErrors] = useState({});
@@ -24,8 +24,7 @@ const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType, eventDesc
 
   const eventTypes = [
     'Corporate Conference',
-    'Wedding Celebration',
-    'Hindu Wedding Functions',
+    'Wedding',
     'Birthday Party',
     'Product Launch',
     'Academic Seminar',
@@ -99,15 +98,10 @@ const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType, eventDesc
       "Create a corporate annual conference with keynote speakers, breakout sessions, and team building activities",
       "Organize a leadership summit for 150 executives with panel discussions and executive dinner"
     ],
-    'Wedding Celebration': [
+    'Wedding': [
       "Organize a sustainable wedding celebration for 150 guests with outdoor ceremony and eco-friendly catering",
       "Plan a beach wedding for 100 guests with cocktail hour, dinner reception, and live band entertainment",
       "Create a destination wedding for 200 guests with welcome party, ceremony, and grand reception"
-    ],
-    'Hindu Wedding Functions': [
-      "Plan traditional Hindu wedding with mehendi, sangeet, haldi, phera, and reception ceremonies for 300 guests with authentic rituals, cultural performances, email invitations, and social media campaigns",
-      "Organize elaborate Hindu wedding functions including engagement, tilak, mehendi, sangeet, haldi, wedding ceremony, reception, and griha pravesh for 500 guests spanning multiple days with digital marketing and visual assets",
-      "Create comprehensive Hindu wedding celebration with all traditional ceremonies: engagement, tilak, jaggo, mehendi, sangeet, haldi, phera, reception, vidai, and griha pravesh for 400 guests with luxury arrangements, email campaigns, and social media content"
     ],
     'Birthday Party': [
       "Plan a milestone 50th birthday celebration for 80 guests with themed decorations and live entertainment",
@@ -152,49 +146,61 @@ const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType, eventDesc
   };
 
   const getExamplePrompts = () => {
-    console.log('🔍 EventPromptForm - eventType:', eventType);
-    console.log('🔍 EventPromptForm - selectedFunctions:', selectedFunctions);
-    
-    // If Hindu Wedding Functions are selected, generate examples based on ALL selected functions
-    if ((eventType === 'Wedding Celebration' || eventType === 'Hindu Wedding Functions') && selectedFunctions.length > 0) {
-      const functionNames = selectedFunctions.map(func => {
-        const functionMap = {
-          'Haldi': 'haldi ceremony',
-          'Mehandi': 'mehendi ceremony', 
-          'Sangeet': 'sangeet night',
-          'Engagement': 'engagement ceremony',
-          'Phera': 'phera ceremony',
-          'Wedding Night': 'wedding ceremony',
-          'Reception': 'reception party',
-          'DJ Night': 'DJ night',
-          'Vidai': 'vidai ceremony',
-          'Griha Pravesh': 'griha pravesh',
-          'Tilak': 'tilak ceremony',
-          'Jaggo': 'jaggo ceremony'
-        };
-        return functionMap[func] || func.toLowerCase();
-      });
+    // For Wedding event type, always show wedding-specific examples
+    if (eventType === 'Wedding') {
+      // Get saved preferences for auto-population
+      const savedPrefs = JSON.parse(localStorage.getItem('event_preferences_cache') || '{}');
+      const guestCount = attendeeCount || savedPrefs.numberOfPeople || 200;
+      const venue = savedPrefs.venue ? savedPrefs.venue.split('-')[0] : 'luxury venue';
+      const city = savedPrefs.city ? savedPrefs.city.charAt(0).toUpperCase() + savedPrefs.city.slice(1) : 'Delhi';
+      const budget = savedPrefs.budget ? `₹${(savedPrefs.budget / 100000).toFixed(1)} lakh` : '₹5-10 lakh';
       
-      const allFunctions = functionNames.join(', ');
-      const guestCount = attendeeCount || (selectedFunctions.length <= 4 ? 250 : selectedFunctions.length <= 8 ? 400 : 500);
-      const days = selectedFunctions.length <= 3 ? '2-3 days' : selectedFunctions.length <= 6 ? '4-5 days' : '6-7 days';
-      
-      const examples = [
-        `Plan a grand Hindu wedding celebration for ${guestCount} guests featuring all selected ceremonies: ${allFunctions}. Include traditional decorations, authentic catering, cultural performances, luxury accommodations, email invitations, social media campaigns, and visual assets spanning ${days}`,
-        `Organize a complete Hindu wedding with ${allFunctions} for ${guestCount} guests. Arrange traditional rituals, premium venues, elaborate decorations, multi-cuisine catering, live entertainment, guest accommodations, digital invitations, social media content, and promotional materials over ${days}`,
-        `Create an authentic Hindu wedding celebration including ${allFunctions} for ${guestCount} guests. Plan traditional ceremonies, luxury venues, cultural decorations, premium catering, professional photography, comprehensive guest services, email marketing, social media promotion, and custom visual assets across ${days}`
-      ];
-      console.log('✅ Generated Hindu wedding examples:', examples);
-      return examples;
+      if (selectedFunctions.length > 0) {
+        // Generate examples based on ONLY selected functions
+        const functionNames = selectedFunctions.map(func => {
+          const functionMap = {
+            'Haldi': 'haldi ceremony',
+            'Mehandi': 'mehendi ceremony', 
+            'Sangeet': 'sangeet night',
+            'Engagement': 'engagement ceremony',
+            'Phera': 'phera ceremony',
+            'Wedding Night': 'wedding ceremony',
+            'Reception': 'reception party',
+            'DJ Night': 'DJ night',
+            'Vidai': 'vidai ceremony',
+            'Griha Pravesh': 'griha pravesh',
+            'Tilak': 'tilak ceremony',
+            'Jaggo': 'jaggo ceremony'
+          };
+          return functionMap[func] || func.toLowerCase();
+        });
+        
+        const selectedFunctionsText = functionNames.join(' and ');
+        const days = selectedFunctions.length === 1 ? '1 day' : selectedFunctions.length <= 3 ? '2-3 days' : selectedFunctions.length <= 6 ? '4-5 days' : '6-7 days';
+        
+        return [
+          `Plan a Hindu wedding ${selectedFunctionsText} for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Include traditional decorations, authentic catering, cultural performances, professional photography, email invitations, and social media campaigns spanning ${days}`,
+          `Organize ${selectedFunctionsText} celebration for ${guestCount} guests in ${city} with budget ${budget}. Venue ${venue}, arrange traditional rituals, premium decorations, multi-cuisine catering, live entertainment, digital invitations, and promotional materials over ${days}`,
+          `Create authentic ${selectedFunctionsText} for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Plan traditional ceremonies, luxury decorations, premium catering, professional photography, email marketing, and social media promotion across ${days}`
+        ];
+      } else {
+        // General wedding examples with auto-populated details
+        return [
+          `Plan a traditional Hindu wedding for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Include ceremony and reception with authentic decorations, catering, photography, email invitations, and social media campaigns`,
+          `Organize a wedding celebration for ${guestCount} guests in ${city} with budget ${budget}. Venue ${venue}, include ceremonies and reception with luxury arrangements, entertainment, digital marketing, and guest services`,
+          `Create a grand wedding celebration for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Plan traditional ceremonies, premium catering, cultural performances, professional photography, email campaigns, and social media promotion`
+        ];
+      }
     }
     
+    // Fallback for other event types
     if (eventType && examplePromptsByType[eventType]) {
       return examplePromptsByType[eventType];
     }
     return [
       "Plan a tech startup product launch for 200 attendees with networking sessions and live demos",
       "Organize a sustainable wedding celebration for 150 guests with outdoor ceremony and eco-friendly catering",
-      "Create a corporate annual conference with keynote speakers, breakout sessions, and team building activities"
+      "Create a corporate annual conference with keynote speakers, breakout sessions and team building activities"
     ];
   };
 
@@ -233,6 +239,76 @@ const EventPromptForm = ({ onGenerate, isGenerating, defaultEventType, eventDesc
             <p className="mt-1 text-sm text-error">{errors?.eventType}</p>
           )}
         </div>
+
+        {/* Hindu Wedding Functions */}
+        {eventType === 'Wedding' && (
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Hindu Wedding Functions
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {[
+                { value: 'Haldi', label: 'Haldi Ceremony', description: 'Traditional turmeric ceremony for purification and blessings' },
+                { value: 'Mehandi', label: 'Mehandi Ceremony', description: 'Intricate henna designs with music and celebration' },
+                { value: 'Sangeet', label: 'Sangeet Night', description: 'Musical evening with dance performances and entertainment' },
+                { value: 'Engagement', label: 'Engagement Ceremony', description: 'Ring exchange ceremony with family blessings' },
+                { value: 'Phera', label: 'Phera Ceremony', description: 'Sacred wedding vows around the holy fire' },
+                { value: 'Wedding Night', label: 'Wedding Night', description: 'Main wedding ceremony with traditional rituals' },
+                { value: 'Reception', label: 'Reception Party', description: 'Grand celebration dinner with guests and entertainment' },
+                { value: 'DJ Night', label: 'DJ Night', description: 'High-energy dance party with professional DJ and lighting' },
+                { value: 'Vidai', label: 'Vidai Ceremony', description: 'Emotional farewell ceremony for the bride' },
+                { value: 'Griha Pravesh', label: 'Griha Pravesh', description: 'First entry of bride into groom\'s home' },
+                { value: 'Tilak', label: 'Tilak Ceremony', description: 'Groom\'s family visits bride\'s home for blessings' },
+                { value: 'Jaggo', label: 'Jaggo Ceremony', description: 'Pre-wedding celebration with singing and dancing' }
+              ].map((func) => (
+                <label key={func.value} className="flex items-center space-x-2 p-2 border rounded-lg hover:bg-muted cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedFunctions?.includes(func.value)}
+                    onChange={(e) => {
+                      const newFunctions = e.target.checked
+                        ? [...(selectedFunctions || []), func.value]
+                        : (selectedFunctions || []).filter(f => f !== func.value);
+                      if (onFunctionsChange) {
+                        onFunctionsChange(newFunctions);
+                      }
+                    }}
+                    className="rounded border-border text-primary focus:ring-primary"
+                  />
+                  <span className="text-sm font-medium">{func.label}</span>
+                </label>
+              ))}
+            </div>
+            {selectedFunctions?.length > 0 && (
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800 font-medium mb-2">Selected Functions Preview:</p>
+                <div className="space-y-1">
+                  {selectedFunctions.map(funcValue => {
+                    const func = [
+                      { value: 'Haldi', label: 'Haldi Ceremony', description: 'Traditional turmeric ceremony for purification and blessings' },
+                      { value: 'Mehandi', label: 'Mehandi Ceremony', description: 'Intricate henna designs with music and celebration' },
+                      { value: 'Sangeet', label: 'Sangeet Night', description: 'Musical evening with dance performances and entertainment' },
+                      { value: 'Engagement', label: 'Engagement Ceremony', description: 'Ring exchange ceremony with family blessings' },
+                      { value: 'Phera', label: 'Phera Ceremony', description: 'Sacred wedding vows around the holy fire' },
+                      { value: 'Wedding Night', label: 'Wedding Night', description: 'Main wedding ceremony with traditional rituals' },
+                      { value: 'Reception', label: 'Reception Party', description: 'Grand celebration dinner with guests and entertainment' },
+                      { value: 'DJ Night', label: 'DJ Night', description: 'High-energy dance party with professional DJ and lighting' },
+                      { value: 'Vidai', label: 'Vidai Ceremony', description: 'Emotional farewell ceremony for the bride' },
+                      { value: 'Griha Pravesh', label: 'Griha Pravesh', description: 'First entry of bride into groom\'s home' },
+                      { value: 'Tilak', label: 'Tilak Ceremony', description: 'Groom\'s family visits bride\'s home for blessings' },
+                      { value: 'Jaggo', label: 'Jaggo Ceremony', description: 'Pre-wedding celebration with singing and dancing' }
+                    ].find(f => f.value === funcValue);
+                    return func ? (
+                      <div key={funcValue} className="text-xs text-blue-700">
+                        <span className="font-medium">{func.label}:</span> {func.description}
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Event Description */}
         <div>
@@ -284,7 +360,19 @@ You can write in English or Hindi. Feel free to use multiple lines and detailed 
               <button
                 key={index}
                 type="button"
-                onClick={() => setPrompt(example)}
+                onClick={() => {
+                  setPrompt(example);
+                  // Auto-populate missing details from preferences if needed
+                  const savedPrefs = JSON.parse(localStorage.getItem('event_preferences_cache') || '{}');
+                  if (savedPrefs && Object.keys(savedPrefs).length > 0) {
+                    // Trigger a small delay to ensure the prompt is set first
+                    setTimeout(() => {
+                      if (errors?.prompt) {
+                        setErrors(prev => ({ ...prev, prompt: '' }));
+                      }
+                    }, 100);
+                  }
+                }}
                 className="w-full text-left p-3 bg-muted hover:bg-muted/80 rounded-md text-sm text-muted-foreground hover:text-foreground transition-smooth"
               >
                 <Icon name="Lightbulb" size={14} className="inline mr-2" />

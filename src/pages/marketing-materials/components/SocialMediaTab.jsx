@@ -13,6 +13,12 @@ const SocialMediaTab = ({ sharedDescription = '' }) => {
 
   const syncedDescription = sharedDescription ?? '';
 
+  const weddingExamples = [
+    "Join us for a grand Hindu wedding celebration featuring haldi ceremony, mehendi night, sangeet evening, phera ceremony, and reception party. Experience traditional rituals, authentic cuisine, cultural performances, and unforgettable memories with family and friends.",
+    "Celebrate love with traditional Hindu wedding ceremonies including engagement, tilak ceremony, mehendi celebration, sangeet night, haldi ceremony, wedding ceremony, and reception. Witness beautiful rituals, enjoy festive atmosphere, and be part of our joyous celebration.",
+    "Experience the magic of Hindu wedding traditions with jaggo ceremony, mehendi function, sangeet night, haldi ceremony, phera ceremony, reception party, and griha pravesh. Join us for authentic celebrations, cultural performances, delicious food, and memorable moments."
+  ];
+
   const platformOptions = [
     { value: 'facebook', label: 'Facebook' },
     { value: 'instagram', label: 'Instagram' },
@@ -122,7 +128,48 @@ const SocialMediaTab = ({ sharedDescription = '' }) => {
   const characterLimit = getCharacterLimit(selectedPlatform);
 
   useEffect(() => {
-    setEventDescription(syncedDescription);
+    const loadPreferences = () => {
+      const savedPrefs = JSON.parse(localStorage.getItem('event_preferences_cache') || '{}');
+      
+      // Auto-generate description from saved preferences if available
+      if (savedPrefs && Object.keys(savedPrefs).length > 0 && !eventDescription) {
+        const { event_type, selectedFunctions, number_of_people, city, venue, budget, event_date, event_time } = savedPrefs;
+        
+        if (event_type === 'Wedding' && selectedFunctions && selectedFunctions.length > 0) {
+          const functionNames = selectedFunctions.map(func => {
+            const functionMap = {
+              'Haldi': 'haldi ceremony',
+              'Mehandi': 'mehendi ceremony', 
+              'Sangeet': 'sangeet night',
+              'Engagement': 'engagement ceremony',
+              'Phera': 'phera ceremony',
+              'Wedding Night': 'wedding ceremony',
+              'Reception': 'reception party',
+              'DJ Night': 'DJ night',
+              'Vidai': 'vidai ceremony',
+              'Griha Pravesh': 'griha pravesh',
+              'Tilak': 'tilak ceremony',
+              'Jaggo': 'jaggo ceremony'
+            };
+            return functionMap[func] || func.toLowerCase();
+          });
+          
+          const cityName = city ? city.charAt(0).toUpperCase() + city.slice(1) : 'Delhi';
+          const venueName = venue ? venue.split('-')[0] : 'luxury venue';
+          const budgetText = budget ? `₹${(budget / 100000).toFixed(1)} lakh` : '₹5-10 lakh';
+          const dateText = event_date ? new Date(event_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'November 2025';
+          const timeText = event_time ? new Date(`2000-01-01T${event_time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '9:00 AM';
+          
+          const autoDescription = `Join us for a Hindu wedding ${functionNames.join(' and ')} celebration for ${number_of_people || 300} guests in ${cityName} on ${dateText} at ${timeText}. Experience traditional rituals, authentic cuisine, cultural performances at ${venueName}. Budget ${budgetText}. Be part of our joyous celebration!`;
+          
+          setEventDescription(autoDescription);
+        }
+      } else if (syncedDescription) {
+        setEventDescription(syncedDescription);
+      }
+    };
+    
+    loadPreferences();
   }, [syncedDescription]);
 
   return (
@@ -151,6 +198,26 @@ const SocialMediaTab = ({ sharedDescription = '' }) => {
               {eventDescription.length}/2000 characters
             </p>
           </div>
+
+          {/* Wedding Examples */}
+          {eventDescription.toLowerCase().includes('wedding') && (
+            <div>
+              <p className="text-sm font-medium text-foreground mb-2">Need inspiration? Try these examples:</p>
+              <div className="space-y-2">
+                {weddingExamples.map((example, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setEventDescription(example)}
+                    className="w-full text-left p-3 bg-muted hover:bg-muted/80 rounded-md text-sm text-muted-foreground hover:text-foreground transition-smooth"
+                  >
+                    <Icon name="Lightbulb" size={14} className="inline mr-2" />
+                    {example}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex-1">
             <Select

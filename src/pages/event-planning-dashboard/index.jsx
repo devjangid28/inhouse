@@ -499,6 +499,7 @@ const EventPlanningDashboard = () => {
                     eventDescription={eventDescription}
                     selectedFunctions={dashboardData.selectedFunctions || []}
                     attendeeCount={dashboardData.audienceSize || dashboardData.numberOfPeople}
+                    onFunctionsChange={(functions) => updateDashboardData({ selectedFunctions: functions })}
                   />
                 </div>
               </div>

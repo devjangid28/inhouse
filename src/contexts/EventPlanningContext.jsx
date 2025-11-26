@@ -113,6 +113,7 @@ export const EventPlanningProvider = ({ children }) => {
     const eventTypeMapping = {
       'Corporate Conference': 'corporate',
       'Wedding Celebration': 'wedding',
+      'Wedding': 'wedding',
       'Birthday Party': 'birthday',
       'Product Launch': 'product-launch',
       'Academic Seminar': 'academic',
