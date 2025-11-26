@@ -95,11 +95,36 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
     { value: 'networking', label: 'Networking Event' }
   ];
 
-  const weddingExamples = [
-    "Plan a grand Hindu wedding celebration for 300 guests featuring haldi ceremony, mehendi night, sangeet evening, phera ceremony, and reception party. Include traditional decorations, authentic catering, cultural performances, professional photography, and guest accommodations.",
-    "Organize a traditional wedding with engagement ceremony, tilak ceremony, mehendi celebration, sangeet night, haldi ceremony, wedding ceremony, and reception for 250 guests. Arrange luxury venues, premium catering, live entertainment, and comprehensive guest services.",
-    "Create an authentic Hindu wedding including jaggo ceremony, mehendi function, sangeet night, haldi ceremony, phera ceremony, reception party, and griha pravesh for 400 guests. Plan traditional rituals, cultural decorations, multi-cuisine catering, and professional event management."
-  ];
+  const getExamplesByEventType = (eventType) => {
+    const examples = {
+      'wedding': [
+        "Plan a grand Hindu wedding celebration for 300 guests featuring haldi ceremony, mehendi night, sangeet evening, phera ceremony, and reception party. Include traditional decorations, authentic catering, cultural performances, professional photography, and guest accommodations.",
+        "Organize a traditional wedding with engagement ceremony, tilak ceremony, mehendi celebration, sangeet night, haldi ceremony, wedding ceremony, and reception for 250 guests. Arrange luxury venues, premium catering, live entertainment, and comprehensive guest services.",
+        "Create an authentic Hindu wedding including jaggo ceremony, mehendi function, sangeet night, haldi ceremony, phera ceremony, reception party, and griha pravesh for 400 guests. Plan traditional rituals, cultural decorations, multi-cuisine catering, and professional event management."
+      ],
+      'corporate': [
+        "Plan a corporate annual conference for 200 professionals featuring keynote speakers, panel discussions, networking sessions, and product demonstrations. Include professional venue setup, catering, audio-visual equipment, and marketing materials.",
+        "Organize a product launch event for 150 attendees with live demonstrations, media coverage, networking reception, and brand presentations. Arrange premium venue, catering, photography, and promotional campaigns.",
+        "Create a corporate team building event for 100 employees with interactive workshops, outdoor activities, team challenges, and celebration dinner. Plan engaging activities, professional facilitation, and memorable experiences."
+      ],
+      'Birthday Party': [
+        "Plan a milestone birthday celebration for 80 guests with themed decorations, entertainment, catering, and special activities. Include venue setup, birthday cake ceremony, music, photography, and party favors.",
+        "Organize a surprise birthday party for 50 guests with decorations, entertainment, catering, and memorable moments. Arrange venue coordination, theme implementation, and celebration activities.",
+        "Create a grand birthday celebration for 120 guests with live entertainment, themed decorations, premium catering, and special performances. Plan comprehensive event management and guest experiences."
+      ],
+      'conference': [
+        "Plan an academic conference for 300 participants with research presentations, poster sessions, networking lunch, and keynote speeches. Include conference facilities, audio-visual setup, catering, and material distribution.",
+        "Organize a professional seminar for 150 attendees with expert speakers, interactive workshops, networking opportunities, and certification ceremony. Arrange venue setup, technical equipment, and refreshments.",
+        "Create an industry conference for 250 professionals with panel discussions, exhibition booths, networking sessions, and awards ceremony. Plan comprehensive event logistics and attendee engagement."
+      ],
+      'networking': [
+        "Plan a business networking event for 100 professionals with structured networking sessions, refreshments, keynote speaker, and business card exchange. Include venue setup, catering, and networking facilitation.",
+        "Organize a professional meetup for 75 industry experts with presentations, panel discussions, networking hour, and refreshments. Arrange venue coordination and networking activities.",
+        "Create an industry networking mixer for 120 professionals with speed networking, cocktail reception, guest speakers, and business connections. Plan engaging networking format and premium hospitality."
+      ]
+    };
+    return examples[eventType] || examples['corporate'];
+  };
 
   const handleGenerate = async () => {
     if (!eventDescription?.trim()) {
@@ -239,28 +264,26 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
             </p>
           </div>
 
-          {/* Wedding Examples */}
-          {(selectedTemplate === 'wedding' || eventDescription.toLowerCase().includes('wedding')) && (
-            <div>
-              <p className="text-sm font-medium text-foreground mb-2">Need inspiration? Try these examples:</p>
-              <div className="space-y-2">
-                {weddingExamples.map((example, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => {
-                      setEventDescription(example);
-                      onDescriptionChange?.(example);
-                    }}
-                    className="w-full text-left p-3 bg-muted hover:bg-muted/80 rounded-md text-sm text-muted-foreground hover:text-foreground transition-smooth"
-                  >
-                    <Icon name="Lightbulb" size={14} className="inline mr-2" />
-                    {example}
-                  </button>
-                ))}
-              </div>
+          {/* Event Examples */}
+          <div>
+            <p className="text-sm font-medium text-foreground mb-2">Need inspiration? Try these examples:</p>
+            <div className="space-y-2">
+              {getExamplesByEventType(selectedTemplate).map((example, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => {
+                    setEventDescription(example);
+                    onDescriptionChange?.(example);
+                  }}
+                  className="w-full text-left p-3 bg-muted hover:bg-muted/80 rounded-md text-sm text-muted-foreground hover:text-foreground transition-smooth"
+                >
+                  <Icon name="Lightbulb" size={14} className="inline mr-2" />
+                  {example}
+                </button>
+              ))}
             </div>
-          )}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select

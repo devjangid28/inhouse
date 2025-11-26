@@ -13,11 +13,35 @@ const SocialMediaTab = ({ sharedDescription = '' }) => {
 
   const syncedDescription = sharedDescription ?? '';
 
-  const weddingExamples = [
-    "Join us for a grand Hindu wedding celebration featuring haldi ceremony, mehendi night, sangeet evening, phera ceremony, and reception party. Experience traditional rituals, authentic cuisine, cultural performances, and unforgettable memories with family and friends.",
-    "Celebrate love with traditional Hindu wedding ceremonies including engagement, tilak ceremony, mehendi celebration, sangeet night, haldi ceremony, wedding ceremony, and reception. Witness beautiful rituals, enjoy festive atmosphere, and be part of our joyous celebration.",
-    "Experience the magic of Hindu wedding traditions with jaggo ceremony, mehendi function, sangeet night, haldi ceremony, phera ceremony, reception party, and griha pravesh. Join us for authentic celebrations, cultural performances, delicious food, and memorable moments."
-  ];
+  const getExamplesByEventType = (eventDescription) => {
+    const eventType = eventDescription.toLowerCase();
+    
+    if (eventType.includes('wedding')) {
+      return [
+        "Join us for a grand Hindu wedding celebration featuring haldi ceremony, mehendi night, sangeet evening, phera ceremony, and reception party. Experience traditional rituals, authentic cuisine, cultural performances, and unforgettable memories with family and friends.",
+        "Celebrate love with traditional Hindu wedding ceremonies including engagement, tilak ceremony, mehendi celebration, sangeet night, haldi ceremony, wedding ceremony, and reception. Witness beautiful rituals, enjoy festive atmosphere, and be part of our joyous celebration.",
+        "Experience the magic of Hindu wedding traditions with jaggo ceremony, mehendi function, sangeet night, haldi ceremony, phera ceremony, reception party, and griha pravesh. Join us for authentic celebrations, cultural performances, delicious food, and memorable moments."
+      ];
+    } else if (eventType.includes('corporate') || eventType.includes('conference') || eventType.includes('business')) {
+      return [
+        "Join us for an exclusive corporate conference featuring industry leaders, innovative presentations, networking opportunities, and professional development sessions. Connect with experts, discover new trends, and advance your career.",
+        "Attend our annual business summit with keynote speakers, panel discussions, product launches, and networking events. Experience cutting-edge insights, build valuable connections, and drive business growth.",
+        "Be part of our professional conference featuring expert speakers, interactive workshops, industry exhibitions, and networking sessions. Gain knowledge, expand your network, and stay ahead in your field."
+      ];
+    } else if (eventType.includes('birthday') || eventType.includes('party')) {
+      return [
+        "Celebrate with us at an amazing birthday party featuring live entertainment, delicious food, fun activities, and memorable moments. Join the celebration, enjoy great company, and create lasting memories.",
+        "Join our special birthday celebration with themed decorations, entertainment, games, and fantastic food. Come party with us and make this milestone birthday unforgettable.",
+        "Be part of our birthday bash featuring music, dancing, great food, and wonderful company. Celebrate life, friendship, and joy with us at this special occasion."
+      ];
+    } else {
+      return [
+        "Join us for an exciting event featuring amazing activities, great food, entertainment, and memorable experiences. Don't miss this opportunity to connect, celebrate, and create lasting memories.",
+        "Be part of our special event with engaging activities, networking opportunities, refreshments, and entertainment. Come experience something unique and connect with like-minded people.",
+        "Attend our exclusive event featuring professional presentations, networking sessions, refreshments, and engaging activities. Expand your horizons and make valuable connections."
+      ];
+    }
+  };
 
   const platformOptions = [
     { value: 'facebook', label: 'Facebook' },
@@ -199,25 +223,23 @@ const SocialMediaTab = ({ sharedDescription = '' }) => {
             </p>
           </div>
 
-          {/* Wedding Examples */}
-          {eventDescription.toLowerCase().includes('wedding') && (
-            <div>
-              <p className="text-sm font-medium text-foreground mb-2">Need inspiration? Try these examples:</p>
-              <div className="space-y-2">
-                {weddingExamples.map((example, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => setEventDescription(example)}
-                    className="w-full text-left p-3 bg-muted hover:bg-muted/80 rounded-md text-sm text-muted-foreground hover:text-foreground transition-smooth"
-                  >
-                    <Icon name="Lightbulb" size={14} className="inline mr-2" />
-                    {example}
-                  </button>
-                ))}
-              </div>
+          {/* Event Examples */}
+          <div>
+            <p className="text-sm font-medium text-foreground mb-2">Need inspiration? Try these examples:</p>
+            <div className="space-y-2">
+              {getExamplesByEventType(eventDescription).map((example, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setEventDescription(example)}
+                  className="w-full text-left p-3 bg-muted hover:bg-muted/80 rounded-md text-sm text-muted-foreground hover:text-foreground transition-smooth"
+                >
+                  <Icon name="Lightbulb" size={14} className="inline mr-2" />
+                  {example}
+                </button>
+              ))}
             </div>
-          )}
+          </div>
 
           <div className="flex-1">
             <Select

@@ -33,6 +33,36 @@ const VisualAssetsTab = ({ sharedDescription = '' }) => {
     }
   }, []);
 
+  const getExamplesByEventType = (eventDescription) => {
+    const eventType = eventDescription.toLowerCase();
+    
+    if (eventType.includes('wedding')) {
+      return [
+        "Elegant Hindu wedding invitation for Rahul & Priya featuring Haldi, Mehendi, Sangeet, Phera ceremonies with traditional floral background, gold accents, and ornate borders in royal red and gold theme.",
+        "Beautiful wedding poster showcasing traditional Hindu ceremonies including engagement, tilak, mehendi, sangeet, haldi, wedding ceremony, and reception with intricate mandala designs and vibrant colors.",
+        "Stunning wedding social media post featuring couple names with traditional Indian motifs, marigold flowers, peacock feathers, and elegant typography in warm orange and pink theme."
+      ];
+    } else if (eventType.includes('corporate') || eventType.includes('conference') || eventType.includes('business')) {
+      return [
+        "Professional corporate conference poster featuring modern design, company branding, speaker photos, agenda highlights, and clean typography in blue and white theme with geometric patterns.",
+        "Sleek business event banner showcasing keynote speakers, networking opportunities, innovation themes, and professional imagery with minimalist design in corporate blue and gray colors.",
+        "Modern corporate social media post featuring event highlights, professional photography, company logos, and clean layout with contemporary fonts in professional color scheme."
+      ];
+    } else if (eventType.includes('birthday') || eventType.includes('party')) {
+      return [
+        "Vibrant birthday party poster featuring celebration themes, balloons, confetti, cake imagery, and festive typography in bright rainbow colors with fun decorative elements.",
+        "Colorful birthday celebration banner showcasing party activities, entertainment highlights, and joyful imagery with playful fonts in cheerful pink and purple theme.",
+        "Fun birthday social media post featuring party photos, celebration graphics, birthday wishes, and energetic design with bright colors and festive decorations."
+      ];
+    } else {
+      return [
+        "Professional event poster featuring clean modern design, key information highlights, engaging imagery, and contemporary typography in sophisticated color scheme.",
+        "Elegant event banner showcasing main attractions, speaker information, and event details with premium design elements in refined color palette.",
+        "Stylish social media post featuring event highlights, professional photography, and engaging content with modern layout and attractive visual elements."
+      ];
+    }
+  };
+
   const assetTypeOptions = [
     { value: 'poster', label: 'Event Poster' },
     { value: 'banner', label: 'Web Banner' },
@@ -231,6 +261,24 @@ const VisualAssetsTab = ({ sharedDescription = '' }) => {
           <p className="text-xs text-muted-foreground mt-1">
             Tip: Be specific about style, colors, mood, and elements. For invitations, mention couple names to include them in the design.
           </p>
+        </div>
+
+        {/* Event Examples */}
+        <div className="mb-4">
+          <p className="text-sm font-medium text-foreground mb-2">Need inspiration? Try these examples:</p>
+          <div className="space-y-2">
+            {getExamplesByEventType(customText).map((example, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => setCustomText(example)}
+                className="w-full text-left p-3 bg-muted hover:bg-muted/80 rounded-md text-sm text-muted-foreground hover:text-foreground transition-smooth"
+              >
+                <Icon name="Lightbulb" size={14} className="inline mr-2" />
+                {example}
+              </button>
+            ))}
+          </div>
         </div>
 
         <Button

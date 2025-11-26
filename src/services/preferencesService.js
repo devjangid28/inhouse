@@ -77,7 +77,9 @@ class PreferencesService {
         event_date: preferences.eventDate || preferences.event_date || '',
         event_time: preferences.eventTime || preferences.event_time || '',
         event_type: preferences.eventType || preferences.event_type || '',
-        event_id: preferences.eventId || preferences.event_id || null
+        event_id: preferences.eventId || preferences.event_id || null,
+        selectedFunctions: preferences.selectedFunctions || [],
+        eventDescription: preferences.eventDescription || ''
       };
 
       if (this.useBackend) {
@@ -111,6 +113,8 @@ class PreferencesService {
         event_date: preferences.eventDate || preferences.event_date || '',
         event_time: preferences.eventTime || preferences.event_time || '',
         event_type: preferences.eventType || preferences.event_type || '',
+        selectedFunctions: preferences.selectedFunctions || [],
+        eventDescription: preferences.eventDescription || '',
         id: Date.now(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
