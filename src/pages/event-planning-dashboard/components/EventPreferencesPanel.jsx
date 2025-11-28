@@ -299,13 +299,15 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
           placeholder="Select event type..."
         />
 
-        <Dropdown
-          label="Religion"
-          value={preferences.religion}
-          onChange={(value) => handleChange('religion', value)}
-          options={religionOptions}
-          placeholder="Select religion..."
-        />
+        {preferences.eventType === 'Wedding' && (
+          <Dropdown
+            label="Religion"
+            value={preferences.religion}
+            onChange={(value) => handleChange('religion', value)}
+            options={religionOptions}
+            placeholder="Select religion..."
+          />
+        )}
 
         <Dropdown
           label="City / Location"

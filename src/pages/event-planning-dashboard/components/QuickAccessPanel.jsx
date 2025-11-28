@@ -131,46 +131,7 @@ const QuickAccessPanel = ({ recentActivity = [], className = '' }) => {
           })}
         </div>
       </div>
-      {/* Recent Activity */}
-      <div className="bg-card rounded-lg border border-border p-6 shadow-card">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            <Icon name="Activity" size={18} className="text-primary" />
-            <h3 className="text-lg font-semibold text-foreground">Recent Activity</h3>
-          </div>
-          <Button variant="ghost" size="sm" iconName="MoreHorizontal">
-            View All
-          </Button>
-        </div>
 
-        <div className="space-y-3">
-          {mockRecentActivity?.map((activity) => (
-            <div key={activity?.id} className="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded-md transition-smooth">
-              <div className="flex items-center justify-center w-6 h-6">
-                <Icon 
-                  name={activity?.icon} 
-                  size={14} 
-                  className={getActivityIcon(activity?.type)} 
-                />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-foreground">{activity?.action}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatTimeAgo(activity?.timestamp)}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {mockRecentActivity?.length === 0 && (
-          <div className="text-center py-8">
-            <Icon name="Clock" size={32} className="text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No recent activity</p>
-            <p className="text-xs text-muted-foreground">Start planning to see your activity here</p>
-          </div>
-        )}
-      </div>
       {/* AI Assistant Tip */}
       <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/20 p-4">
         <div className="flex items-start space-x-3">
