@@ -21,7 +21,7 @@ const NotificationToast = ({
       case 'top-center':
         return 'top-4 left-1/2 transform -translate-x-1/2';
       case 'top-right':
-        return 'top-4 right-4';
+        return 'top-6 right-6';
       case 'below-header':
         return 'top-20 left-1/2 transform -translate-x-1/2';
       case 'bottom-left':
@@ -29,9 +29,9 @@ const NotificationToast = ({
       case 'bottom-center':
         return 'bottom-4 left-1/2 transform -translate-x-1/2';
       case 'bottom-right':
-        return 'bottom-4 right-4';
+        return 'bottom-6 right-6';
       default:
-        return 'top-4 right-4';
+        return 'top-6 right-6';
     }
   };
 
@@ -55,17 +55,17 @@ const NotificationToast = ({
   const getNotificationStyles = (type) => {
     switch (type) {
       case 'success':
-        return 'border-success/20 bg-success/5';
+        return 'border-success/30 bg-success/10 backdrop-blur-sm';
       case 'error':
-        return 'border-error/20 bg-error/5';
+        return 'border-error/30 bg-error/10 backdrop-blur-sm';
       case 'warning':
-        return 'border-warning/20 bg-warning/5';
+        return 'border-warning/30 bg-warning/10 backdrop-blur-sm';
       case 'info':
-        return 'border-primary/20 bg-primary/5';
+        return 'border-primary/30 bg-primary/10 backdrop-blur-sm';
       case 'loading':
-        return 'border-primary/20 bg-primary/5';
+        return 'border-primary/30 bg-primary/10 backdrop-blur-sm';
       default:
-        return 'border-border bg-card';
+        return 'border-border/30 bg-card/80 backdrop-blur-sm';
     }
   };
 
@@ -89,7 +89,7 @@ const NotificationToast = ({
           return (
             <div
               key={notification?.id}
-              className={`flex items-start space-x-3 p-4 rounded-lg border shadow-modal transition-all duration-300 ease-out animate-slide-in ${styles}`}
+              className={`flex items-start space-x-3 p-4 rounded-lg border shadow-lg transition-all duration-300 ease-out animate-slide-in bg-white/90 backdrop-blur-md ${styles}`}
             >
               {/* Icon */}
               <div className="flex-shrink-0 mt-0.5">

@@ -345,12 +345,16 @@ const EventPlanningDashboard = () => {
     switch (action) {
       case 'view':
         if (contentId === 'task-list') {
+          showInfo('Navigating to Task Board Management...');
           navigate('/task-board-management');
         } else if (contentId === 'budget') {
+          showInfo('Navigating to Budget Calculator...');
           navigate('/budget-calculator');
         } else if (contentId === 'marketing') {
+          showInfo('Navigating to Marketing Materials...');
           navigate('/marketing-materials');
         } else if (contentId === 'event-plan') {
+          showInfo('Navigating to Event Plan Details...');
           navigate('/event-plan-details');
         }
         break;
@@ -415,6 +419,11 @@ const EventPlanningDashboard = () => {
         audienceSize: loadedData.numberOfPeople,
         numberOfPeople: loadedData.numberOfPeople 
       });
+    }
+    
+    // Show notification for loaded preferences
+    if (loadedData && Object.keys(loadedData).length > 0) {
+      showSuccess('Event plan loaded with preferences from dashboard');
     }
   };
 
@@ -605,7 +614,7 @@ const EventPlanningDashboard = () => {
       <NotificationToast
         notifications={notifications}
         onDismiss={dismissNotification}
-        position="below-header"
+        position="top-right"
       />
     </div>
   );

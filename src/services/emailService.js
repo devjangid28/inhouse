@@ -64,6 +64,9 @@ export class EmailService {
     // Extract event details from prompt or use defaults
     const eventDetails = this.extractEventDetails(prompt, eventType);
     
+    // Clean description to remove placeholder HTML content
+    eventDetails.description = this.cleanPlaceholderContent(eventDetails.description);
+    
     switch (tone) {
       case 'formal':
         return this.generateFormalEmail(eventDetails, eventType);
@@ -107,6 +110,31 @@ export class EmailService {
     }
 
     return details;
+  }
+
+  static cleanPlaceholderContent(description) {
+    if (!description) return description;
+    
+    return description
+      .replace(/<h3>Event: \[Your Company Name\][^<]*<\/h3>/gi, '')
+      .replace(/<p><strong>Date:<\/strong>[^<]*<\/p>/gi, '')
+      .replace(/<p><strong>Time:<\/strong>[^<]*<\/p>/gi, '')
+      .replace(/<p><strong>Venue:<\/strong>[^<]*<\/p>/gi, '')
+      .replace(/<p><strong>Highlights Include:<\/strong><\/p>[\s\S]*?<\/ul>/gi, '')
+      .replace(/<p><strong>Registration:<\/strong>[^<]*<\/p>/gi, '')
+      .replace(/<p><strong>Dress Code:<\/strong>[^<]*<\/p>/gi, '')
+      .replace(/<p><strong>RSVP:<\/strong>[^<]*<\/p>/gi, '')
+      .replace(/RSVP:\s*Kindly respond by \[RSVP Date\][^\n]*/gi, '')
+      .replace(/&lt;h3&gt;Event: \[Your Company Name\][^&]*&lt;\/h3&gt;/gi, '')
+      .replace(/&lt;p&gt;&lt;strong&gt;Date:&lt;\/strong&gt;[^&]*&lt;\/p&gt;/gi, '')
+      .replace(/&lt;p&gt;&lt;strong&gt;Time:&lt;\/strong&gt;[^&]*&lt;\/p&gt;/gi, '')
+      .replace(/&lt;p&gt;&lt;strong&gt;Venue:&lt;\/strong&gt;[^&]*&lt;\/p&gt;/gi, '')
+      .replace(/&lt;p&gt;&lt;strong&gt;Highlights Include:&lt;\/strong&gt;&lt;\/p&gt;[\s\S]*?&lt;\/ul&gt;/gi, '')
+      .replace(/&lt;p&gt;&lt;strong&gt;Registration:&lt;\/strong&gt;[^&]*&lt;\/p&gt;/gi, '')
+      .replace(/&lt;p&gt;&lt;strong&gt;Dress Code:&lt;\/strong&gt;[^&]*&lt;\/p&gt;/gi, '')
+      .replace(/&lt;p&gt;&lt;strong&gt;RSVP:&lt;\/strong&gt;[^&]*&lt;\/p&gt;/gi, '')
+      .replace(/&lt;[^&]*&gt;/g, '')
+      .trim();
   }
 
   static generateFormalEmail(details, eventType) {

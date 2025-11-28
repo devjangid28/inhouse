@@ -32,6 +32,11 @@ const BudgetCalculator = () => {
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [customExpenses, setCustomExpenses] = useState([]);
 
+  // Show navigation notification on component mount
+  useEffect(() => {
+    showInfo('Navigated to Budget Calculator');
+  }, []);
+
   // Sync form data with context on mount and when context changes
   useEffect(() => {
     setFormData(contextBudgetData);
@@ -377,7 +382,7 @@ const BudgetCalculator = () => {
       <NotificationToast
         notifications={notifications}
         onDismiss={dismissNotification}
-        position="below-header"
+        position="top-right"
       />
 
       {/* Custom Expense Modal */}

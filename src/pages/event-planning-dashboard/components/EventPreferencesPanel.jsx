@@ -17,6 +17,7 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
     eventDate: '',
     eventTime: '',
     eventType: '',
+    religion: '',
     selectedFunctions: [],
     eventDescription: ''
   });
@@ -35,6 +36,13 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
     { value: 'Music Concert', label: 'Music Concert' },
     { value: 'Art Exhibition', label: 'Art Exhibition' },
     { value: 'Sports Tournament', label: 'Sports Tournament' },
+  ];
+
+  const religionOptions = [
+    { value: 'Hindu', label: 'Hindu' },
+    { value: 'Muslim', label: 'Muslim' },
+    { value: 'Christian', label: 'Christian' },
+    { value: 'Sikh', label: 'Sikh' }
   ];
 
   const hinduWeddingFunctions = [
@@ -125,6 +133,7 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
           eventDate: savedPreferences.eventDate || savedPreferences.event_date || '',
           eventTime: savedPreferences.eventTime || savedPreferences.event_time || '',
           eventType: eventType,
+          religion: savedPreferences.religion || '',
           selectedFunctions: savedPreferences.selectedFunctions || [],
           eventDescription: savedPreferences.eventDescription || ''
         };
@@ -150,16 +159,15 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
         newPrefs.budget = adjustedBudget;
       }
       
-      // Generate event description for Hindu wedding functions
-      if (field === 'selectedFunctions') {
-        const descriptions = value.map(funcValue => {
-          const func = hinduWeddingFunctions.find(f => f.value === funcValue);
-          return func ? `${func.label}: ${func.description}` : '';
-        }).filter(Boolean);
-        
-        if (descriptions.length > 0) {
-          newPrefs.eventDescription = `Hindu Wedding Celebration\n\nSelected Functions:\n${descriptions.join('\n\n')}`;
-        }
+      // Clear selected functions when religion changes
+      if (field === 'religion') {
+        newPrefs.selectedFunctions = [];
+      }
+      
+      // Clear religion when event type changes away from Wedding
+      if (field === 'eventType' && value !== 'Wedding') {
+        newPrefs.religion = '';
+        newPrefs.selectedFunctions = [];
       }
       
       return newPrefs;
@@ -199,6 +207,67 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
     }
   };
 
+  const getWeddingFunctionsByReligion = (selectedReligion) => {
+    const weddingFunctionsByReligion = {
+      Hindu: [
+        { value: 'Haldi', label: 'Haldi Ceremony' },
+        { value: 'Mehandi', label: 'Mehandi Ceremony' },
+        { value: 'Sangeet', label: 'Sangeet Night' },
+        { value: 'Engagement', label: 'Engagement Ceremony' },
+        { value: 'Phera', label: 'Phera Ceremony' },
+        { value: 'Wedding Night', label: 'Wedding Night' },
+        { value: 'Reception', label: 'Reception Party' },
+        { value: 'DJ Night', label: 'DJ Night' },
+        { value: 'Vidai', label: 'Vidai Ceremony' },
+        { value: 'Griha Pravesh', label: 'Griha Pravesh' },
+        { value: 'Tilak', label: 'Tilak Ceremony' },
+        { value: 'Jaggo', label: 'Jaggo Ceremony' }
+      ],
+      Muslim: [
+        { value: 'Istikhara', label: 'Istikhara' },
+        { value: 'Mangni', label: 'Mangni (Engagement)' },
+        { value: 'Manjha', label: 'Manjha Ceremony' },
+        { value: 'Mehendi', label: 'Mehendi Ceremony' },
+        { value: 'Sangeet', label: 'Sangeet Night' },
+        { value: 'Nikah', label: 'Nikah Ceremony' },
+        { value: 'Qubool Hai', label: 'Qubool Hai Ritual' },
+        { value: 'Khutbah', label: 'Khutbah' },
+        { value: 'Walima', label: 'Walima Reception' },
+        { value: 'Rukhsati', label: 'Rukhsati (Bride Farewell)' },
+        { value: 'Ghar Wapsi', label: 'Ghar Wapsi / Chauthi' }
+      ],
+      Christian: [
+        { value: 'Bridal Shower', label: 'Bridal Shower' },
+        { value: 'Engagement', label: 'Engagement Ceremony' },
+        { value: 'Bachelor Party', label: 'Bachelor / Bachelorette Party' },
+        { value: 'Church Wedding', label: 'Church Wedding Ceremony' },
+        { value: 'Holy Mass', label: 'Holy Mass & Vows' },
+        { value: 'Ring Exchange', label: 'Ring Exchange' },
+        { value: 'Reception', label: 'Reception Party' },
+        { value: 'First Dance', label: 'First Dance' },
+        { value: 'Cake Cutting', label: 'Cake Cutting' },
+        { value: 'Toast', label: 'Toast & Speeches' },
+        { value: 'Bouquet Toss', label: 'Bouquet Toss' },
+        { value: 'Send-off', label: 'Send-off Ceremony' }
+      ],
+      Sikh: [
+        { value: 'Roka', label: 'Roka Ceremony' },
+        { value: 'Kurmai', label: 'Kurmai (Engagement)' },
+        { value: 'Chooda', label: 'Chooda Ceremony' },
+        { value: 'Haldi', label: 'Haldi Ceremony' },
+        { value: 'Mehandi', label: 'Mehandi Ceremony' },
+        { value: 'Sangeet', label: 'Sangeet Night' },
+        { value: 'Anand Karaj', label: 'Anand Karaj' },
+        { value: 'Laavan Phere', label: 'Laavan Phere' },
+        { value: 'Langar', label: 'Langar' },
+        { value: 'Doli', label: 'Doli Ceremony' },
+        { value: 'Reception', label: 'Reception Party' },
+        { value: 'Griha Pravesh', label: 'Griha Pravesh (Post-wedding welcome)' }
+      ]
+    };
+    return weddingFunctionsByReligion[selectedReligion] || [];
+  };
+
   const isFormValid = () => {
     return preferences.venue && preferences.numberOfPeople && preferences.budget;
   };
@@ -230,7 +299,13 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
           placeholder="Select event type..."
         />
 
-
+        <Dropdown
+          label="Religion"
+          value={preferences.religion}
+          onChange={(value) => handleChange('religion', value)}
+          options={religionOptions}
+          placeholder="Select religion..."
+        />
 
         <Dropdown
           label="City / Location"
@@ -282,7 +357,36 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
           value={preferences.eventTime}
           onChange={(value) => handleChange('eventTime', value)}
         />
+      </div>
 
+      {/* Wedding Functions Section */}
+      {preferences.eventType === 'Wedding' && preferences.religion && (
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-900 mb-3">
+            {preferences.religion} Wedding Functions
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {getWeddingFunctionsByReligion(preferences.religion).map((func) => (
+              <label key={func.value} className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  checked={preferences.selectedFunctions?.includes(func.value) || false}
+                  onChange={(e) => {
+                    const newFunctions = e.target.checked
+                      ? [...(preferences.selectedFunctions || []), func.value]
+                      : (preferences.selectedFunctions || []).filter(f => f !== func.value);
+                    handleChange('selectedFunctions', newFunctions);
+                  }}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">{func.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div className="flex items-end">
           <button
             onClick={handleSave}
@@ -307,7 +411,17 @@ const EventPreferencesPanel = ({ onSave, onLoad, onEventTypeChange }) => {
             {preferences.eventType && (
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-500 mb-1">Event Type</p>
-                <p className="text-sm font-medium text-gray-900">{preferences.eventType}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {preferences.eventType === 'Wedding' && preferences.religion 
+                    ? `${preferences.religion} ${preferences.eventType}` 
+                    : preferences.eventType}
+                </p>
+              </div>
+            )}
+            {preferences.religion && (
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-xs text-gray-500 mb-1">Religion</p>
+                <p className="text-sm font-medium text-gray-900">{preferences.religion}</p>
               </div>
             )}
             {preferences.city && (
