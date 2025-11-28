@@ -96,11 +96,31 @@ const EmailInvitationTab = ({ sharedDescription = '', onDescriptionChange }) => 
   ];
 
   const getExamplesByEventType = (eventType) => {
+    // Get current values from saved preferences
+    const savedPrefs = JSON.parse(localStorage.getItem('event_preferences_cache') || '{}');
+    const religion = savedPrefs.religion || '';
+    const guestCount = savedPrefs.numberOfPeople || savedPrefs.number_of_people || 50;
+    const city = savedPrefs.city ? savedPrefs.city.charAt(0).toUpperCase() + savedPrefs.city.slice(1) : 'Delhi';
+    const budget = savedPrefs.budget ? `₹${(savedPrefs.budget / 100000).toFixed(1)} lakh` : '₹0.7 lakh';
+    const venue = savedPrefs.venue ? savedPrefs.venue.split('-')[0].toLowerCase() : 'luxury venue';
+    
     const examples = {
-      'wedding': [
-        "Plan a grand Hindu wedding celebration for 300 guests featuring haldi ceremony, mehendi night, sangeet evening, phera ceremony, and reception party. Include traditional decorations, authentic catering, cultural performances, professional photography, and guest accommodations.",
-        "Organize a traditional wedding with engagement ceremony, tilak ceremony, mehendi celebration, sangeet night, haldi ceremony, wedding ceremony, and reception for 250 guests. Arrange luxury venues, premium catering, live entertainment, and comprehensive guest services.",
-        "Create an authentic Hindu wedding including jaggo ceremony, mehendi function, sangeet night, haldi ceremony, phera ceremony, reception party, and griha pravesh for 400 guests. Plan traditional rituals, cultural decorations, multi-cuisine catering, and professional event management."
+      'wedding': religion === 'Muslim' ? [
+        `Plan a traditional Muslim wedding for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Include mangni ceremony, nikah ceremony, and walima reception with Islamic decorations and halal catering`,
+        `Organize a Muslim wedding celebration for ${guestCount} guests in ${city} with budget ${budget}. Include mangni, mehendi, nikah ceremony, and walima with traditional arrangements and guest services`,
+        `Create an authentic Muslim wedding for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Plan Islamic ceremonies, halal catering, and traditional celebrations`
+      ] : religion === 'Christian' ? [
+        `Plan a traditional Christian wedding for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Include engagement ceremony, church wedding, and reception with decorations and catering`,
+        `Organize a Christian wedding celebration for ${guestCount} guests in ${city} with budget ${budget}. Include bridal shower, church ceremony, and reception with premium arrangements and guest services`,
+        `Create an elegant Christian wedding for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Plan church ceremonies, catering, photography, and celebrations`
+      ] : religion === 'Sikh' ? [
+        `Plan a traditional Sikh wedding for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Include roka ceremony, anand karaj, and reception with gurudwara decorations and langar`,
+        `Organize a Sikh wedding celebration for ${guestCount} guests in ${city} with budget ${budget}. Include roka, mehendi, anand karaj, and reception with traditional arrangements and guest services`,
+        `Create an authentic Sikh wedding for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Plan gurudwara ceremonies, langar, photography, and celebrations`
+      ] : [
+        `Plan a traditional Hindu wedding for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Include haldi ceremony, mehendi, sangeet, and reception with decorations and catering`,
+        `Organize a Hindu wedding celebration for ${guestCount} guests in ${city} with budget ${budget}. Include haldi, mehendi, sangeet, phera ceremony, and reception with premium arrangements and guest services`,
+        `Create a grand Hindu wedding for ${guestCount} guests in ${city} with budget ${budget} at ${venue}. Plan traditional ceremonies, catering, photography, and celebrations`
       ],
       'corporate': [
         "Plan a corporate annual conference for 200 professionals featuring keynote speakers, panel discussions, networking sessions, and product demonstrations. Include professional venue setup, catering, audio-visual equipment, and marketing materials.",
